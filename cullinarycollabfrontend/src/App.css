@@ -1,4 +1,27 @@
 .App {
     text-align: center;
 }
+.about-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;  /* Add space above the button */
+}
+
+.about-button {
+    background-color: gray;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    font-size: 12px; /* Small writing */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    /* Rounded corners, if you like that look */
+    border-radius: 5px;
+}
+
+.about-button:hover {
+    background-color: darkgray; /* A slightly darker shade for hover effect */
+}
 
