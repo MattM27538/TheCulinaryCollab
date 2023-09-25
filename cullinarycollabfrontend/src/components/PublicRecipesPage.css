@@ -1,0 +1,139 @@
+.recipe-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5cm;
+    position: relative;
+    overflow: hidden;
+    height: 400px;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+.row-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: center; 
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 40px;
+}
+
+.recipe-card {
+    width: 50%;
+    border: 1px solid #eee;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+    transition: transform 0.5s ease, opacity 1s ease;
+}
+
+.recipe-card:before, .recipe-card:after {
+    content: "";
+    position: absolute;
+    top: 5px;  /* Adjust this to show more/less of the edge of the card */
+    bottom: 5px;
+    width: 10px;
+    background: #eee; /* This will be the visible edge color of stacked cards */
+    z-index: -1;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+@keyframes fadeToLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes fadeToRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.fade-left {
+    animation: fadeToLeft 0.5s forwards;
+}
+
+.fade-right {
+    animation: fadeToRight 0.5s forwards;
+}
+
+@keyframes fadeInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.enter-from-left {
+    animation: fadeInFromLeft 0.5s forwards;
+}
+
+.enter-from-right {
+    animation: fadeInFromRight 0.5s forwards;
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    background-color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 5;
+    transform: translateY(-50%);
+}
+
+.nav-button-left {
+    left: 200px;
+}
+
+.nav-button-right {
+    right: 200px;
+}
+
+
+.recipe-card:before {
+    left: -10px;
+}
+
+.recipe-card:after {
+    right: -10px;
+}
+
+.instructions-box {
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
