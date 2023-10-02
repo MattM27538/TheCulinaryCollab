@@ -206,15 +206,31 @@ const PublicRecipesPage = () => {
 				</div>
 			);
 	};
-  
+ 
+
+	const handleInputChange = (e) => {
+		const term = e.target.value;
+		setSearchTerm(term);
+		if (term.length > 1 || term.length === 0) {
+			handleSearch(term);
+		}
+	};
 	const handleSearch = () => {
+		console.log(searchTerm);
+		if (searchTerm.length <= 1){
+			setSearchCocktails([]);
+			return;
+		}
+		else {
 		const results = cocktails.filter((recipe) =>
 			recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			recipe.ingredients.some((ingredient) =>
 				ingredient.item.toLowerCase().includes(searchTerm.toLowerCase())
 			)
 		);
+		
 		setSearchCocktails(results);
+		}
 		openSearchPopup();
 	};
 
@@ -261,6 +277,8 @@ const PublicRecipesPage = () => {
             return () => clearTimeout(timer);
         }
     }, [animationDirection]);
+
+
 return (
 	<div className="recipe-page-container">
 	{/* Search Bar */}
@@ -269,13 +287,14 @@ return (
           type="text"
           placeholder="Search for recipe"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleInputChange}
         />
-        <button className="search-button" onClick={handleSearch}>Search</button>
+        <button className="search-button" onClick={openSearchPopup}>Search</button>
       </div>
-
+<div className="searchResultsContainer">
 	{searchPopupVisible && <SearchResultsPopup />}
 	{isPopupOpen && <RecipeModal />}
+	</div>
         {/* User Cocktails */}
         <div className="recipe-container">
             <button 
