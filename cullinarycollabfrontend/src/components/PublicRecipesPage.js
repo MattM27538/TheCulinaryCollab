@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../components/PublicRecipesPage.css';
 
+
 const cocktails = [
     {
         name: "Mojito",
@@ -110,6 +111,8 @@ const newCocktails = [
     }
 ];
 
+const userCocktails = []
+
 
 const PublicRecipesPage = () => {
     const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0);
@@ -117,75 +120,137 @@ const PublicRecipesPage = () => {
     const [cardOpacity, setCardOpacity] = useState(1);
 
 
-    const [newCurrentRecipeIndex, setNewCurrentRecipeIndex] = useState(0);
-    const [newAnimationDirection, setNewAnimationDirection] = useState('none');
-    const [newCardOpacity, setNewCardOpacity] = useState(1);
+    
+	const [newCurrentRecipeIndex, setNewCurrentRecipeIndex] = useState(0);
+	const [newAnimationDirection, setNewAnimationDirection] = useState('none');
+	const [newCardOpacity, setNewCardOpacity] = useState(1)
 
-    const handlePrevRecipe = () => {
-        setAnimationDirection('fade-left');
-        setCardOpacity(0);
 
-        setTimeout(() => {
-            if (currentRecipeIndex === 0) {
-                setCurrentRecipeIndex(cocktails.length - 1);
-            } else {
-                setCurrentRecipeIndex(prev => prev - 1);
-            }
-            setTimeout(() => {
-                setAnimationDirection('enter-from-left');
-                setCardOpacity(1);
-            }, 50);
-        }, 500);
-    };
+	const [userCurrentRecipeIndex, setUserCurrentRecipeIndex] = useState(0);
+	const [userAnimationDirection, setUserAnimationDirection] = useState('none');
+	const [userCardOpacity, setUserCardOpacity] = useState(1);
 
-    const handleNextRecipe = () => {
-        setAnimationDirection('fade-right');
-        setCardOpacity(0);
 
-        setTimeout(() => {
-            if (currentRecipeIndex === cocktails.length - 1) {
-                setCurrentRecipeIndex(0);
-            } else {
-                setCurrentRecipeIndex(prev => prev + 1);
-            }
+	const [searchTerm, setSearchTerm] = useState('');
+	const [searchPopupVisible, setSearchPopupVisible] = useState(false);
+	const [searchCocktails, setSearchCocktails] = useState([]);
 
-            setTimeout(() => {
-                setAnimationDirection('enter-from-right');
-                setCardOpacity(1);
-            }, 50);
-        }, 500);
-    };
-const handlePrevNewRecipe = () => {
-    setNewAnimationDirection('fade-left');
-    setNewCardOpacity(0);
-    setTimeout(() => {
-        if (newCurrentRecipeIndex === 0) {
-            setNewCurrentRecipeIndex(newCocktails.length - 1);
-        } else {
-            setNewCurrentRecipeIndex(prev => prev - 1);
-        }
-        setTimeout(() => {
-            setNewAnimationDirection('enter-from-left');
-            setNewCardOpacity(1);
-        }, 50);
-    }, 500);
-};
+	const [selectedRecipe,setSelectedRecipe] = useState(null);
+	const [isPopupOpen, setPopupOpen] = useState(false);
 
-const handleNextNewRecipe = () => {
-    setNewAnimationDirection('fade-right');
-    setNewCardOpacity(0);
-    setTimeout(() => {
-        if (newCurrentRecipeIndex === newCocktails.length - 1) {
-            setNewCurrentRecipeIndex(0);
-        } else {
-            setNewCurrentRecipeIndex(prev => prev + 1);
-        }
-        setTimeout(() => {
-            setNewAnimationDirection('enter-from-right');
-            setNewCardOpacity(1);
-        }, 50);
-    }, 500);
-};
+
+
+	const handleSelectRecipe = (recipe) => {
+		setSelectedRecipe(recipe);
+		setPopupOpen(true);
+	};
+	const handleCloseModal = () => {
+		setSelectedRecipe(null);
+		setPopupOpen(false);
+	};
+
+
+	const openSearchPopup = () => {
+		setSearchPopupVisible(true);
+	};
+
+
+	const closeSearchPopup = () => {
+		setSearchPopupVisible(false);
+	};
+
+
+	const SearchResultsPopup = () => {
+		return (
+			<div className="search-results-popup">
+			<h2>Search Results</h2>
+			<ul>
+			{searchCocktails.map((recipe, index) => (
+				<li key={index}>
+				{recipe.name}  
+				<button className="view-recipe-button" onClick={() => handleSelectRecipe(recipe)}>
+				View Recipe
+				</button>
+				</li>
+			))}
+			</ul>
+			<button className="close-search-button" onClick={closeSearchPopup}>
+			Close
+			</button>
+			</div>
+		);
+	};
+
+
+
+	const RecipeModal = () => {
+		if (!selectedRecipe) {
+			return null;
+		}
+			return (
+				<div className="modal-overlay">
+				<div className="recipe-modal">
+				<h2>{selectedRecipe.name}</h2>
+				<ul>
+				{selectedRecipe.ingredients.map((ingredient, i) => (
+					<li key={i}>
+					{ingredient.item}: {ingredient.quantity}
+					</li>
+				))}
+				</ul>
+				<div className="instructions-box">{selectedRecipe.instructions}</div>
+				<button className="close-modal-button" onClick={handleCloseModal}>
+				Close
+				</button>
+				</div>
+				</div>
+			);
+	};
+  
+	const handleSearch = () => {
+		const results = cocktails.filter((recipe) =>
+			recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			recipe.ingredients.some((ingredient) =>
+				ingredient.item.toLowerCase().includes(searchTerm.toLowerCase())
+			)
+		);
+		setSearchCocktails(results);
+		openSearchPopup();
+	};
+
+	const handlePrevRecipe = (currentRecipeIndex, setCurrentRecipeIndex, cocktails, setAnimationDirection, setCardOpacity) => {
+		setAnimationDirection('fade-left');
+		setCardOpacity(0);
+		setTimeout(() => {
+			if (currentRecipeIndex === 0) {
+				setCurrentRecipeIndex(cocktails.length - 1);
+			} else {
+				setCurrentRecipeIndex(prev => prev - 1);
+			}
+			setTimeout(() => {
+				setAnimationDirection('enter-from-left');
+				setCardOpacity(1);
+			}, 50);
+		}, 500);
+	};
+
+
+	const handleNextRecipe = (currentRecipeIndex, setCurrentRecipeIndex, cocktails, setAnimationDirection, setCardOpacity) => {
+		setAnimationDirection('fade-right');
+		setCardOpacity(0);
+		setTimeout(() => {
+			if (currentRecipeIndex === cocktails.length - 1) {
+				setCurrentRecipeIndex(0);
+			} else {
+				setCurrentRecipeIndex(prev => prev + 1);
+			}
+			setTimeout(() => {
+				setAnimationDirection('enter-from-right');
+				setCardOpacity(1);
+			}, 50);
+		}, 500);
+	};
+
 
     useEffect(() => {
         if (animationDirection) {
@@ -197,50 +262,114 @@ const handleNextNewRecipe = () => {
         }
     }, [animationDirection]);
 return (
-    <div className="recipe-page-container">
+	<div className="recipe-page-container">
+	{/* Search Bar */}
+	      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search for recipe"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button className="search-button" onClick={handleSearch}>Search</button>
+      </div>
 
-        {/* Original Cocktails */}
+	{searchPopupVisible && <SearchResultsPopup />}
+	{isPopupOpen && <RecipeModal />}
+        {/* User Cocktails */}
         <div className="recipe-container">
-            <button className="nav-button nav-button-left" onClick={handlePrevRecipe}>&lt;</button>
-            
-            <div className={`recipe-card ${animationDirection}`} style={{ opacity: cardOpacity }}>
-                <h2>{cocktails[currentRecipeIndex].name}</h2>
+            <button 
+                className="nav-button nav-button-left" 
+                onClick={() => handlePrevRecipe(userCurrentRecipeIndex, setUserCurrentRecipeIndex, userCocktails, setUserAnimationDirection, setUserCardOpacity)}
+            >
+                &lt;
+            </button>
+
+            <div className={`recipe-card ${userAnimationDirection}`} style={{ opacity: userCardOpacity }}>
+                <h2>{userCocktails[userCurrentRecipeIndex]?.name || "No Recipe Available"}</h2>
                 <ul>
-                    {cocktails[currentRecipeIndex].ingredients.map((ingredient, i) => (
+                    {userCocktails[userCurrentRecipeIndex]?.ingredients.map((ingredient, i) => (
                         <li key={i}>
                             {ingredient.item}: {ingredient.quantity}
                         </li>
-                    ))}
+                    )) || <li>No ingredients</li>}
                 </ul>
                 <div className="instructions-box">
-                    {cocktails[currentRecipeIndex].instructions}
+                    {userCocktails[userCurrentRecipeIndex]?.instructions || "No instructions available."}
                 </div>
             </div>
-            
-            <button className="nav-button nav-button-right" onClick={handleNextRecipe}>&gt;</button>
+
+            <button 
+                className="nav-button nav-button-right" 
+                onClick={() => handleNextRecipe(userCurrentRecipeIndex, setUserCurrentRecipeIndex, userCocktails, setUserAnimationDirection, setUserCardOpacity)}
+            >
+                &gt;
+            </button>
+        </div>
+
+        {/* Original Cocktails */}
+        <div className="recipe-container">
+            <button 
+                className="nav-button nav-button-left" 
+                onClick={() => handlePrevRecipe(currentRecipeIndex, setCurrentRecipeIndex, cocktails, setAnimationDirection, setCardOpacity)}
+            >
+                &lt;
+            </button>
+
+            <div className={`recipe-card ${animationDirection}`} style={{ opacity: cardOpacity }}>
+                <h2>{cocktails[currentRecipeIndex]?.name || "No Recipe Available"}</h2>
+                <ul>
+                    {cocktails[currentRecipeIndex]?.ingredients.map((ingredient, i) => (
+                        <li key={i}>
+                            {ingredient.item}: {ingredient.quantity}
+                        </li>
+                    )) || <li>No ingredients</li>}
+                </ul>
+                <div className="instructions-box">
+                    {cocktails[currentRecipeIndex]?.instructions || "No instructions available."}
+                </div>
+            </div>
+
+            <button 
+                className="nav-button nav-button-right" 
+                onClick={() => handleNextRecipe(currentRecipeIndex, setCurrentRecipeIndex, cocktails, setAnimationDirection, setCardOpacity)}
+            >
+                &gt;
+            </button>
         </div>
 
         {/* New Cocktails */}
         <div className="recipe-container">
-            <button className="nav-button nav-button-left" onClick={handlePrevNewRecipe}>&lt;</button>
-            
+            <button 
+                className="nav-button nav-button-left" 
+                onClick={() => handlePrevRecipe(newCurrentRecipeIndex, setNewCurrentRecipeIndex, newCocktails, setNewAnimationDirection, setNewCardOpacity)}
+            >
+                &lt;
+            </button>
+
             <div className={`recipe-card ${newAnimationDirection}`} style={{ opacity: newCardOpacity }}>
-                <h2>{newCocktails[newCurrentRecipeIndex].name}</h2>
+                <h2>{newCocktails[newCurrentRecipeIndex]?.name || "No Recipe Available"}</h2>
                 <ul>
-                    {newCocktails[newCurrentRecipeIndex].ingredients.map((ingredient, i) => (
+                    {newCocktails[newCurrentRecipeIndex]?.ingredients.map((ingredient, i) => (
                         <li key={i}>
                             {ingredient.item}: {ingredient.quantity}
                         </li>
-                    ))}
+                    )) || <li>No ingredients</li>}
                 </ul>
                 <div className="instructions-box">
-                    {newCocktails[newCurrentRecipeIndex].instructions}
+                    {newCocktails[newCurrentRecipeIndex]?.instructions || "No instructions available."}
                 </div>
             </div>
-            
-            <button className="nav-button nav-button-right" onClick={handleNextNewRecipe}>&gt;</button>
+
+            <button 
+                className="nav-button nav-button-right" 
+                onClick={() => handleNextRecipe(newCurrentRecipeIndex, setNewCurrentRecipeIndex, newCocktails, setNewAnimationDirection, setNewCardOpacity)}
+            >
+                &gt;
+            </button>
         </div>
     </div>
 );
-} 
+
+}
 export default PublicRecipesPage;
