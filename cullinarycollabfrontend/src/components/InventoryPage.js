@@ -49,7 +49,7 @@ const InventoryPage = () => {
                     <label>Item Category:</label>
                     <input type="text" value={itemCategory} onChange={handleItemCategoryChange} required />
                 </div>
-                <button type="submit">Add Item</button>
+                <button-1 type="submit">Add Item</button-1>
             </form>
         </div>
     );
