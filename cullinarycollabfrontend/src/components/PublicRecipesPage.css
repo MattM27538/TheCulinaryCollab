@@ -6,8 +6,9 @@
     position: relative;
     overflow: hidden;
     height: 400px;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding: -200px;
 }
 .row-container {
     display: flex;
@@ -25,7 +26,7 @@
 .recipe-card {
     width: 50%;
     border: 1px solid #eee;
-    padding: 20px;
+    padding: 40px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 10;
@@ -35,10 +36,10 @@
 .recipe-card:before, .recipe-card:after {
     content: "";
     position: absolute;
-    top: 5px;  /* Adjust this to show more/less of the edge of the card */
+    top: 5px;
     bottom: 5px;
     width: 10px;
-    background: #eee; /* This will be the visible edge color of stacked cards */
+    background: #eee;
     z-index: -1;
     transition: transform 0.5s ease, opacity 0.5s ease;
 }
@@ -66,11 +67,11 @@
 }
 
 .fade-left {
-    animation: fadeToLeft 0.5s forwards;
+    animation: fadeToLeft 0.2s forwards;
 }
 
 .fade-right {
-    animation: fadeToRight 0.5s forwards;
+    animation: fadeToRight 0.2s forwards;
 }
 
 @keyframes fadeInFromRight {
@@ -95,11 +96,11 @@
     }
 }
 .enter-from-left {
-    animation: fadeInFromLeft 0.5s forwards;
+    animation: fadeInFromLeft 0.2s forwards;
 }
 
 .enter-from-right {
-    animation: fadeInFromRight 0.5s forwards;
+    animation: fadeInFromRight 0.2s forwards;
 }
 
 .nav-button {
@@ -108,7 +109,7 @@
     background-color: white;
     border: none;
     font-size: 2rem;
-    padding: 5px 10px;
+    padding: 10px;
     cursor: pointer;
     z-index: 5;
     transform: translateY(-50%);
@@ -174,17 +175,36 @@
 }
 
 .search-button {
-  background-color: transparent;
+  background-color: #007BFF;
+  color: #fff;
   border: none;
+  border-radius: 5px;
+  padding: 8px 20px;
   cursor: pointer;
+  margin-top: 2px;
 }
+.search-button:hover {
+  background-color: #0056b3;
+  }
+.search-bar-container {
+  width: 300px;
+  display: flex;
+  align-items: center;
+}
+
 
 .close-search-button {
-  background-color: transparent;
+  background-color: #007BFF;
+  color: #fff;
   border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
   cursor: pointer;
+  margin-top: 10px;
 }
-
+.close-search-button:hover {
+  background-color: #0056b3;
+}
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -226,24 +246,19 @@
 }
 
 .view-recipe-button {
-  background: transparent;
-  color: #000000;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
   cursor: pointer;
-  font-size: 14px;
-  padding: 0;
-  margin: 20;
-  border: 2px solid #000000;
-  border-radius: 5px;
+  margin-left: 20px;
+  border-radius: 10px;
 }
 
 .search-bar {
-    width: 300px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    outline: none;
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  flex-grow: 1;
+   margin-right: 10px;
 }
 
 .search-bar:focus {
@@ -252,18 +267,7 @@
 }
 
 .view-recipe-button:hover {
-  color: #0056b3;
+  background-color: #0056b3;
 }
 
-.searchResultsContainer {
-    width: 300px;
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #ddd; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);    
-    background-color: #fff;    
-    padding: 16px; 
-    margin-top: 8px;
-    border-radius: 8px;
-}
 
