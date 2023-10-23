@@ -126,7 +126,6 @@ const PublicRecipesPage = () => {
 	const [userAnimationDirection, setUserAnimationDirection] = useState('none');
 	const [userCardOpacity, setUserCardOpacity] = useState(1);
 
-
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchPopupVisible, setSearchPopupVisible] = useState(false);
 	const [searchCocktails, setSearchCocktails] = useState([]);
@@ -206,28 +205,27 @@ const PublicRecipesPage = () => {
 	const handleInputChange = (e) => {
 		const term = e.target.value;
 		setSearchTerm(term);
-		if (term.length > 1 || term.length === 0) {
+		if (term.length > 0 || term.length === 0) {
 			handleSearch(term);
 		}
 	};
 
-	const handleSearch = () => {
-		//console.log(searchTerm);
-		if (searchTerm.length <= 1){
+	const handleSearch = (e) => {
+		if (e.length <= 1){
 			setSearchCocktails([]);
 			return;
 		}
 		else {
 			const results = cocktails.filter((recipe) =>
-				recipe.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				recipe.name.toLowerCase().includes(e.toLowerCase()) ||
 				recipe.ingredients.some((ingredient) =>
-					ingredient.item.toLowerCase().includes(searchTerm.toLowerCase())
+					ingredient.item.toLowerCase().includes(e.toLowerCase())
 				)
 			);
-
 			setSearchCocktails(results);
 		}
-		console.log(searchTerm);
+		
+		console.log(e);
 		openSearchPopup();
 	};
 
