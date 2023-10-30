@@ -15,8 +15,8 @@ const Header = ({ pageTitle }) => {
             <nav className="navigation">
                 <button onClick={() => navigate('/public-recipes')}>Public Recipes</button>
                 <button onClick={() => navigate('/workshop')}>Workshop</button>
-	        <button onClick={() => navigate('/bar-help')}>Bar Help</button>
-	    	<button onClick={() => navigate('inventory-page')}>Inventory Page</button>
+	            <button onClick={() => navigate('/bar-help')}>Bar Help</button>
+                <button onClick={() => navigate('/login')}>Login</button>
             </nav>
         </header>
     );
