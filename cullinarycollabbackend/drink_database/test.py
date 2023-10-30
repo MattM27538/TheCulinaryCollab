@@ -1,16 +1,13 @@
-from django.test import TestCase
-
-# Create your tests here.
 
 # Import Django settings and configure Django
 import os
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "drink_database.settings")  
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "drink_database.settings")  # Replace 'projectname' with your project's name
 django.setup()
 
 # Import your Django models
-from inventory.models import Drink  
+from inventory.models import Drink  # Replace 'appname' with the name of your app
 
 # Create a new drink recipe
 def create_drink_recipe():
@@ -37,4 +34,3 @@ def display_drink_recipes():
 if __name__ == "__main__":
     create_drink_recipe()  # Add a new drink recipe
     display_drink_recipes()  # Display all drink recipes from the database
-
