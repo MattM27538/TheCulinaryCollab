@@ -6,6 +6,7 @@ import AboutPage from './components/AboutPage';
 import PublicRecipesPage from './components/PublicRecipesPage';
 import WorkshopPage from './components/WorkshopPage';
 import BarHelpPage from './components/BarHelpPage';
+import InventoryPage from './components/InventoryPage';
 import LoginPage from './components/LoginPage';
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                     <Route path="/public-recipes" element={<PublicRecipesPage />} />
                     <Route path="/workshop" element={<WorkshopPage />} />
 	            <Route path="/bar-help" element={<BarHelpPage />} />
+		    <Route path="/inventory-page" element={<InventoryPage />} />
                 </Routes>
             </div>
         </Router>
