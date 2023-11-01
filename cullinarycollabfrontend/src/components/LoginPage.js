@@ -84,20 +84,20 @@ const LoginPage = () => {
                 console.log("User off");
                 toggleBadLoginTextUser(false);
             }
+            if(UsernameTerm != ""){
+                const checkPass = LoginInfo.filter((credentials) => 
+                credentials.Username === (UsernameTerm) &&
+                credentials.Password === (PasswordTerm)
+                );
 
-            const checkPass = LoginInfo.filter((credentials) => 
-            credentials.Username === (UsernameTerm) &&
-            credentials.Password === (PasswordTerm)
-            );
-
-            if(checkPass <= 0 || PasswordTerm.length <= 0){
-                console.log("Pass on");
-                toggleBadLoginTextPass(true);
-            }else{
-                console.log("pass off");
-                toggleBadLoginTextUser(false);
+                if(checkPass <= 0 || PasswordTerm.length <= 0){
+                    console.log("Pass on");
+                    toggleBadLoginTextPass(true);
+                }else{
+                    console.log("pass off");
+                    toggleBadLoginTextUser(false);
+                }
             }
-            
             console.log("Bad Login Credentials");
         }
 
