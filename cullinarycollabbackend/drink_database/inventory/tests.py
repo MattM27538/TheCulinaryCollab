@@ -12,10 +12,10 @@ django.setup()
 # Import your Django models
 from inventory.models import Drink  
 
-# Create a new drink recipe
+### Create a new drink recipe
 def create_drink_recipe():
     drink = Drink(
-        name="Mojito",
+        name="test",
         ingredients="2 oz White Rum, 1 oz Lime Juice, 2 tsp Sugar, 6-8 Fresh Mint Leaves, Soda Water",
         instructions="Muddle mint and sugar in a glass. Add rum, lime juice, and ice. Top with soda water. Stir and garnish with mint sprig."
     )
