@@ -1,13 +1,23 @@
 import React, {useState, useEffect } from 'react';
 import axios from 'axios'
 import './LandingPage.css';
-
+import RecipeStack from './RecipeStack';
+import DrinkForm from './DrinkForm';
+//const RecipeList = ({ recipes }) => {
+//	return (
+//		<div className="recipe-list">
+//      {recipes.map((recipe, index) => (
+//        <RecipeCard key={index} {output.name, output.ingredients, output.instructions} />
+//      ))}
+//    </div>
+//  );
+//};
 const WorkshopPage = () => {
     const [details, setDetails] = useState([]);
     
     useEffect(() => {
 	    let data;
-	    axios.get('http://localhost:8000')
+	    axios.get('http://127.0.0.1:8000/')
 	    .then (res => {
 		    data = res.data;
 		    setDetails(data);
@@ -15,6 +25,7 @@ const WorkshopPage = () => {
 	    .catch(err => { });
 }, []);
     return (
+	    <>
         <div className="landing-page">
             <h2>Workshop</h2>
 	    <hr></hr>
@@ -29,6 +40,10 @@ const WorkshopPage = () => {
 		 ))}
 
         </div>
+	<div className="Enter-Drinks">
+      		<DrinkForm />
+    	</div>
+	</>
     );
 };
 
