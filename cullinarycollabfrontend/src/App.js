@@ -7,6 +7,7 @@ import PublicRecipesPage from './components/PublicRecipesPage';
 import WorkshopPage from './components/WorkshopPage';
 import BarHelpPage from './components/BarHelpPage';
 import InventoryPage from './components/InventoryPage';
+import LoginPage from './components/LoginPage';
 function App() {
     return (
         <Router>
@@ -14,11 +15,12 @@ function App() {
                 <Header pageTitle={""} /> {}
                 <Routes>
 	            <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<LoginPage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/public-recipes" element={<PublicRecipesPage />} />
                     <Route path="/workshop" element={<WorkshopPage />} />
 	            <Route path="/bar-help" element={<BarHelpPage />} />
-	    	    <Route path="/inventory-page" element={<InventoryPage />} />
+		    <Route path="/inventory-page" element={<InventoryPage />} />
                 </Routes>
             </div>
         </Router>
