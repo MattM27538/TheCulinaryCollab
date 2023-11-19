@@ -21,6 +21,7 @@ from inventory.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+#    path('api/recipes/', RecipeListAPIView.as_view(), name='recipe-list'),
     path('', DrinkView.as_view(), name="anything"),
     re_path('', DrinkView.as_view()),
 
