@@ -56,7 +56,7 @@ const RegisterPage = () => {
 			await setDoc(doc(firestore, 'usernames', lowerCaseUsername), { email: lowerCaseEmail });
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/personalRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/savedRecipes`, 'initial'), {});
-
+			await setDoc(doc(firestore, `users/${userCredential.user.uid}/inventory`, 'initial'), {});
 			navigate('/workshop');
 		} catch (error) {
 			console.error('Error during registration: ', error);
