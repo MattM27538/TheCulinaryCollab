@@ -8,6 +8,7 @@ import WorkshopPage from './components/WorkshopPage';
 import BarHelpPage from './components/BarHelpPage';
 import InventoryPage from './components/InventoryPage';
 import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 function App() {
     return (
         <Router>
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/workshop" element={<WorkshopPage />} />
 	            <Route path="/bar-help" element={<BarHelpPage />} />
 		    <Route path="/inventory-page" element={<InventoryPage />} />
+	    	    <Route path="/register" element={<RegisterPage />} />
                 </Routes>
             </div>
         </Router>

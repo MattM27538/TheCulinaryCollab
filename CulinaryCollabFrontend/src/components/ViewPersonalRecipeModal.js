@@ -1,12 +1,16 @@
 import React from 'react';
 import './ViewRecipeModal.css';
 
-const ViewRecipeModal = ({ isOpen, onClose, recipe }) => {
+const PersonalRecipeViewModal = ({ isOpen, onClose, recipe, onEdit }) => {
 	if (!recipe) return null;
-
+	const handleEditClick = () => {
+		onEdit();
+		onClose();
+	}
 	return (
 		<div className={`modal ${isOpen ? 'open' : ''}`}>
 		<div className="modal-content">
+		<button className="edit-button" onClick={handleEditClick}>Edit</button>
 		<h2>{recipe.name}</h2>
 		<p><strong>Timing:</strong> {recipe.timing}</p>
 		<p><strong>Taste:</strong> {recipe.taste}</p>
@@ -20,13 +24,11 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe }) => {
 		</ul>
 		<p><strong>Preparation:</strong> {recipe.preparation}</p>
 		<p><strong>Visibility:</strong> {recipe.visibility}</p>
-		{}
 		<button onClick={onClose}>Close</button>
 		</div>
 		</div>
 	);
-
 };
 
-export default ViewRecipeModal;
+export default PersonalRecipeViewModal;
 

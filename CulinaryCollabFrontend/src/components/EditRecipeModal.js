@@ -1,21 +1,24 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AddRecipeModal.css';
 
-const AddRecipeModal = ({ isOpen, onClose, addRecipe }) => {
-	const nameRef = useRef();
-	const timingRef = useRef();
-	const tasteRef = useRef();
-	const preparationRef = useRef();
+const EditRecipeModal = ({ isOpen, onClose, updateRecipe, recipe}) => {
+	const [name, setName] = useState('');
+	const [timing, setTiming] = useState('');
+	const [taste, setTaste] = useState('');
+	const [preparation, setPreparation] = useState('');
 	const [ingredients, setIngredients] = useState([{ ingredient: '', amount: '', unit: '' }]);
 	const [visibility, setVisibility] = useState('private');
+
 	const handleAddIngredient = () => {
 		setIngredients([...ingredients, { ingredient: '', amount: '', unit: '' }]);
 	};
+
 	const handleIngredientChange = (index, field, value) => {
 		const updatedIngredients = [...ingredients];
 		updatedIngredients[index][field] = value;
 		setIngredients(updatedIngredients);
 	};
+
 	const handleRemoveIngredient = (index) => {
 		const updatedIngredients = [...ingredients];
 		updatedIngredients.splice(index, 1);
@@ -24,40 +27,48 @@ const AddRecipeModal = ({ isOpen, onClose, addRecipe }) => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
-		const ingredientsArray = ingredients.filter((ingredient) => ingredient.ingredient !== '');
-
-		const recipeData = {
-			name: nameRef.current.value,
-			timing: timingRef.current.value,
-			taste: tasteRef.current.value,
-			ingredients: ingredientsArray,
-			preparation: preparationRef.current.value,
-			visibility: visibility,
+		const updatedRecipeData = {
+			name,
+			timing,
+			taste,
+			ingredients: ingredients.filter(ing => ing.ingredient !== ''),
+			preparation,
+			visibility,
 		};
-
-		addRecipe(recipeData);
-		nameRef.current.value = '';
-		timingRef.current.value = '';
-		tasteRef.current.value = '';
-		preparationRef.current.value = '';
+		await updateRecipe(updatedRecipeData);
+		setName('');
+		setTiming('');
+		setTaste('');
+		setPreparation('');
 		setIngredients([{ ingredient: '', amount: '', unit: '' }]);
+		setVisibility('private');
 
 		onClose();
 	};
+	useEffect(() => {
+		if (recipe) {
+			setName(recipe.name);
+			setTiming(recipe.timing);
+			setTaste(recipe.taste);
+			setPreparation(recipe.preparation);
+			setIngredients(recipe.ingredients || []);
+			setVisibility(recipe.visibility || 'private');
+		}
+	}, [recipe]);
+
 
 	return (
 		<div className={`modal ${isOpen ? 'open' : ''}`}>
 		<div className="modal-content">
 		<form onSubmit={handleSubmit}>
 		<label>Name</label>
-		<input type="text" ref={nameRef} required />
+		<input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
 
 		<label>Timing</label>
-		<input type="text" ref={timingRef} required />
+		<input type="text" value={timing} onChange={(e) => setTiming(e.target.value)} required />
 
 		<label>Taste</label>
-		<input type="text" ref={tasteRef} required />
+		<input type="text" value={taste} onChange={(e) => setTaste(e.target.value)} required />
 
 		<label>Ingredients</label>
 		{ingredients.map((ingredient, index) => (
@@ -92,7 +103,7 @@ const AddRecipeModal = ({ isOpen, onClose, addRecipe }) => {
 		</button>
 
 		<label>Preparation</label>
-		<textarea rows="4" ref={preparationRef} required />
+		<textarea rows="4" value={preparation} onChange={(e) => setPreparation(e.target.value)} required />
 
 		<div className="visibility-section">
 		<label>Visibility</label>
@@ -105,7 +116,7 @@ const AddRecipeModal = ({ isOpen, onClose, addRecipe }) => {
 		<div className="button-row">
 		<div className="back-button">
 		<button type="button" onClick={onClose}>
-		Back
+		Close
 		</button>
 		</div>
 		<div className="save-button">
@@ -116,8 +127,7 @@ const AddRecipeModal = ({ isOpen, onClose, addRecipe }) => {
 		</div>
 		</div>
 	);
-
 };
 
-export default AddRecipeModal;
+export default EditRecipeModal;
 
