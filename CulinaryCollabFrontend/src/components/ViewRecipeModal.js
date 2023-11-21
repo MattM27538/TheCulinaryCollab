@@ -1,7 +1,7 @@
 import React from 'react';
 import './ViewRecipeModal.css';
 
-const ViewRecipeModal = ({ isOpen, onClose, recipe }) => {
+const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave}) => {
 	if (!recipe) return null;
 
 	return (
@@ -21,6 +21,7 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe }) => {
 		<p><strong>Preparation:</strong> {recipe.preparation}</p>
 		<p><strong>Visibility:</strong> {recipe.visibility}</p>
 		{}
+		<button onClick={onSave}>Save Recipe</button>
 		<button onClick={onClose}>Close</button>
 		</div>
 		</div>

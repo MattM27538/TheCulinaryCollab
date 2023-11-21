@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
 import './WorkshopPage.css';
 import { firestore, auth } from '../firebase';
-import { addDoc, collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import AddRecipeModal from './AddRecipeModal';
 import ViewRecipeModal from './ViewRecipeModal';
 import RecipeSearchBar from './RecipeSearchBar';
 import EditRecipeModal from './EditRecipeModal';
 import ViewPersonalRecipeModal from './ViewPersonalRecipeModal';
+import ViewSavedRecipeModal from './ViewSavedRecipeModal';
+
 const WorkshopPage = () => {
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);
 	const [filteredRecipes, setFilteredRecipes] = useState([]);
 	const [filteredPublicRecipes, setFilteredPublicRecipes] = useState([]);
 	const [recipes, setRecipes] = useState([]);
@@ -24,6 +27,7 @@ const WorkshopPage = () => {
 	const [selectedRecipeForEdit, setSelectedRecipeForEdit] = useState(null);
 	const openAddModal = () => setIsAddModalOpen(true);
 	const closeAddModal = () => setIsAddModalOpen(false);
+
 	const openViewModal = (recipe) => {
 		setSelectedRecipe(recipe);
 		setIsViewModalOpen(true);
@@ -33,6 +37,15 @@ const WorkshopPage = () => {
 		setSelectedRecipe(null);
 	};
 
+	const openSavedRecipeModal = (recipe) => {
+		setSelectedRecipe(recipe);
+		setIsSavedRecipeModalOpen(true);
+	};
+
+	const closeSavedRecipeModal = () => {
+		setIsSavedRecipeModalOpen(false);
+		setSelectedRecipe(null);
+	};
 	const addRecipe = async (recipeData) => {
 		try {
 			if (auth.currentUser) {
@@ -45,6 +58,31 @@ const WorkshopPage = () => {
 			console.error('Error saving personal recipe: ', error);
 		}
 	};
+	const removeSavedRecipe = async (recipeId) => {
+		try {
+			if (auth.currentUser && recipeId) {
+				const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, recipeId);
+				await deleteDoc(recipeRef);
+				console.log('Recipe removed successfully');
+				fetchSavedRecipes();
+			}
+		} catch (error) {
+			console.error('Error removing saved recipe: ', error);
+		}
+	};
+	const saveRecipe = async (recipe) => {
+		try {
+			if (auth.currentUser) {
+				const savedRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
+				await addDoc(savedRecipesRef, recipe);
+				console.log('Recipe saved successfully');
+				fetchSavedRecipes();
+			}
+		} catch (error) {
+			console.error('Error saving recipe: ', error);
+		}
+	};
+
 	const fetchRecipes = async () => {
 		const recipesCollection = collection(firestore, 'recipes');
 		const querySnapshot = await getDocs(recipesCollection);
@@ -61,6 +99,11 @@ const WorkshopPage = () => {
 		const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
 		const personalRecipesSnap = await getDocs(personalRecipesCol);
 		setPersonalRecipes(personalRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+	};
+	const fetchSavedRecipes = async () => {
+		const savedRecipesCollection = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
+		const savedRecipesSnap = await getDocs(savedRecipesCollection);
+		setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 	};
 
 	const openEditModal = (recipe) => {
@@ -141,9 +184,10 @@ const WorkshopPage = () => {
 
 		<button onClick={openAddModal}>Add Recipe</button>
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
-		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} />
+		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)}/>
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
 		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
+		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
 		{/* Test set recipes */}
 		<h2>All Recipes</h2>
 		<div className="recipe-list">
@@ -187,7 +231,7 @@ const WorkshopPage = () => {
 		<div className="recipe-list">
 		<div className="recipe-scroll">
 		{savedRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
-			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
+			<div key={recipe.id} className="recipe-item" onClick={() => openSavedRecipeModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
 			</div>
