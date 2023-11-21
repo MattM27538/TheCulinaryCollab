@@ -14,13 +14,12 @@ const WorkshopPage = () => {
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);
-	const [filteredRecipes, setFilteredRecipes] = useState([]);
-	const [filteredPublicRecipes, setFilteredPublicRecipes] = useState([]);
 	const [recipes, setRecipes] = useState([]);
 	const [publicRecipes, setPublicRecipes] = useState([]);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [personalRecipes, setPersonalRecipes] = useState([]);
 	const [savedRecipes, setSavedRecipes] = useState([]);
+	const [allUserRecipes, setAllUserRecipes] = useState([]);
 	const [originalUsername, setOriginalUsername] = useState('');
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isPersonalViewModalOpen, setIsPersonalViewModalOpen] = useState(false);
@@ -49,10 +48,27 @@ const WorkshopPage = () => {
 	const addRecipe = async (recipeData) => {
 		try {
 			if (auth.currentUser) {
+				const user = auth.currentUser;
+				const username = user.displayName;
+				const email = user.email;
+
+				const extendedRecipeData = {
+					...recipeData,
+					createdBy: {
+						uid: user.uid,
+						username: username,	
+						email: email
+					}
+				};
 				const personalRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
 				await addDoc(personalRecipesRef, recipeData);
+
+				const allUserRecipesRef = collection(firestore, `allUserRecipes`);
+				await addDoc(allUserRecipesRef, extendedRecipeData);
+
 				console.log('Personal recipe saved successfully');
 				fetchPersonalRecipes();
+				fetchAllUserRecipes();
 			}
 		} catch (error) {
 			console.error('Error saving personal recipe: ', error);
@@ -106,6 +122,12 @@ const WorkshopPage = () => {
 		setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 	};
 
+	const fetchAllUserRecipes = async () => {
+		const allRecipesCollection = collection(firestore, 'allUserRecipes');
+		const allRecipesSnap = await getDocs(allRecipesCollection);
+		setAllUserRecipes(allRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+	};
+
 	const openEditModal = (recipe) => {
 		console.log("Opening edit modal for recipe: ", recipe);
 		setSelectedRecipeForEdit(recipe);
@@ -127,7 +149,6 @@ const WorkshopPage = () => {
 	};
 	const updateRecipe = async (updatedRecipeData) => {
 		try {
-
 			const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
 			await setDoc(recipeRef, updatedRecipeData);
 			console.log('Recipe updated successfully');
@@ -137,17 +158,15 @@ const WorkshopPage = () => {
 			console.error('Error updating recipe: ', error);
 		}
 	};
-	const handleSearchResults = (filtered, filteredPublic) => {
-		setFilteredRecipes(filtered || []);
-		setFilteredPublicRecipes(filteredPublic || []);
-	};
-
 	useEffect(() => {
-		fetchRecipes();
+		
 		fetchPublicRecipes();
+		fetchPersonalRecipes();
+		fetchSavedRecipes();
+		fetchAllUserRecipes();
 	}, []);
 
-	useEffect(() => {
+
 		const fetchUserData = async () => {
 			if (auth.currentUser) {
 				const userRef = doc(firestore, 'users', auth.currentUser.uid);
@@ -168,18 +187,16 @@ const WorkshopPage = () => {
 			}
 		};
 
-		fetchUserData();
-	}, []);
+
 
 	return (
 		<div className="landing-page">
 		<h1>Welcome {originalUsername}</h1>
 		<RecipeSearchBar
-		recipes={recipes}
 		publicRecipes={publicRecipes}
-		onSearch={handleSearchResults}
+		personalRecipes={personalRecipes}
+		savedRecipes={savedRecipes}	
 		onView={openViewModal}
-
 		/>
 
 		<button onClick={openAddModal}>Add Recipe</button>
@@ -188,27 +205,26 @@ const WorkshopPage = () => {
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
 		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
-		{/* Test set recipes */}
-		<h2>All Recipes</h2>
+		{/* Universal Recipes */}
+		<h2>All User Recipes</h2>
 		<div className="recipe-list">
 		<div className="recipe-scroll">
-		{(filteredRecipes.length > 0 ? filteredRecipes : recipes).map((recipe) => (
+		{allUserRecipes.map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
 			</div>
 		))}
 		</div>
-		</div>
-
+		</div>	
 		{/* Public recipes */}
 		<h2>Public Recipes</h2>
 		<div className="recipe-list">
 		<div className="recipe-scroll">
-		{(filteredPublicRecipes.length > 0 ? filteredPublicRecipes : publicRecipes).map((recipe) => (
+		{publicRecipes.map((recipe) => ( // Always render publicRecipes
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
-			{}
+			{/* Additional recipe details */}
 			</div>
 		))}
 		</div>
