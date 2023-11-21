@@ -36,7 +36,7 @@ const Header = ({ pageTitle }) => {
             <nav className="navigation">
                 <button onClick={() => navigate('/public-recipes')}>Public Recipes</button>
                 <button onClick={() => navigate('/workshop')}>Workshop</button>
-                <button onClick={() => navigate('/bar-help')}>Bar Help</button>
+                <button onClick={() => navigate('/browse')}>Browse</button>
                 <button onClick={() => navigate('/inventory-page')}>Inventory Page</button>
                 {isLoggedIn ? (
                     <button onClick={handleLogout}>Logout</button>
