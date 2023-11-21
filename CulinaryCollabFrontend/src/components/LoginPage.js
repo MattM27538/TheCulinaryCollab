@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [profilePic, setProfilePic] = useState('')
 	const navigate = useNavigate();
 
 	const handleLogin = async () => {
@@ -32,13 +31,6 @@ const LoginPage = () => {
 
 		try {
 			await signInWithEmailAndPassword(auth, loginInput, password);
-			const userRef = doc(firestore, 'users', auth.currentUser.uid);
-			const userSnap = await getDoc(userRef);
-			if (userSnap.exists()) {
-				const userData = userSnap.data();
-				const profilePicUrl = userData.profilePic || 'default-profile-pic-url';
-				setProfilePic(profilePicUrl);
-			}
 			navigate('/workshop');
 		} catch (error) {
 			console.error('Error during login: ', error);
