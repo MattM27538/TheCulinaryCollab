@@ -3,12 +3,13 @@ import './RecipeSearchBar.css';
 const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchResults, setSearchResults] = useState([]);
-
+	
 	const handleInputChange = (e) => {
 		setSearchTerm(e.target.value);
-		console.log(searchTerm);
+		console.log(e);
+		handleSearch(e);
 	};
-	const handleSearch = () => {
+	const handleSearch = (e) => {
 		const lowercasedTerm = searchTerm.toLowerCase();
 		const allRecipes = [...personalRecipes, ...savedRecipes, ...publicRecipes];
 		const filtered = allRecipes.filter(recipe => {
@@ -17,6 +18,7 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 			const isNotInitial = recipe.id !== 'initial';
 			return (recipeName.includes(lowercasedTerm) || ingredientsMatch) && isNotInitial;
 		});
+		console.log(e);
 		setSearchResults(filtered);
 	};
 	const isPersonalRecipe = (recipe) => {

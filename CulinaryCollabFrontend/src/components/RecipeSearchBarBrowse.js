@@ -16,6 +16,7 @@ const RecipeSearchBarBrowse = ({ recipes, onView }) => {
                 (recipe.ingredients &&
                     recipe.ingredients.some((ingredient) => ingredient.ingredient.toLowerCase().includes(lowercasedTerm)))
         );
+	console.log(searchTerm);
         setSearchResults(filtered);
     };
 

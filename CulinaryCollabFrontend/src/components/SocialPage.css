@@ -1,0 +1,23 @@
+.users-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.user-item .username {
+  margin-right: 10px;
+}
+
+.user-profile-picture {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  order: 1; /* Puts the image after the text */
+}
+

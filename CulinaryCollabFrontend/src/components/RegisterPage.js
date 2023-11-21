@@ -9,8 +9,7 @@ const RegisterPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const navigate = useNavigate();
-
-	const validatePassword = (password) => {
+		const validatePassword = (password) => {
 		return password.length >= 6 &&
 			/[A-Z]/.test(password) &&
 			/[a-z]/.test(password) &&
@@ -21,7 +20,6 @@ const RegisterPage = () => {
 		const isValidLength = username.length > 4 && username.length < 15;
 		const hasValidCharacters = /^[a-zA-Z0-9_]+$/.test(username);
 		const noSpaces = !/\s/.test(username);
-
 		return isValidLength && hasValidCharacters && noSpaces;
 	};
 
@@ -52,7 +50,7 @@ const RegisterPage = () => {
 
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, lowerCaseEmail, password);
-			await setDoc(doc(firestore, 'users', userCredential.user.uid), { username: lowerCaseUsername, originalUsername: username, email: lowerCaseEmail });
+			await setDoc(doc(firestore, 'users', userCredential.user.uid), { username: lowerCaseUsername, originalUsername: username, email: lowerCaseEmail });	
 			await setDoc(doc(firestore, 'usernames', lowerCaseUsername), { email: lowerCaseEmail });
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/personalRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/savedRecipes`, 'initial'), {});
