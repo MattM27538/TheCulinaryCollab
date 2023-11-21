@@ -92,8 +92,8 @@ const BrowseRecipesPage = () => {
 		))}
 		</div>
 		<div className="pagination-buttons">
-		{currentPage > 0 && <button onClick={goToPreviousPage}>Previous</button>}
-		{(currentPage + 1) * recipesPerPage < recipes.length && <button onClick={goToNextPage}>Next</button>}
+		{currentPage > 0 && <button className="common-button-style" onClick={goToPreviousPage}>Previous</button>}
+		{(currentPage + 1) * recipesPerPage < recipes.length && <button className="common-button-style" onClick={goToNextPage}>Next</button>}
 		</div>
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe && canSaveRecipe(selectedRecipe)}/>
 		</div>

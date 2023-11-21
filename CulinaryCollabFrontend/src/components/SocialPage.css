@@ -18,6 +18,22 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  order: 1; /* Puts the image after the text */
+  order: 1;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.friend-username {
+  margin-right: 10px;
+}
+
+.friend-profile-picture {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }
 

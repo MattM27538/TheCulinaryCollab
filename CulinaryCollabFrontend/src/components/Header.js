@@ -59,7 +59,7 @@ return (
                     setShowDrinksDropdown(!showDrinksDropdown);
                 }}>Drinks</button>
                 <div className={`dropdown-content ${showDrinksDropdown ? 'show' : ''}`}>
-                    <a onClick={() => handleUserClick('/workshop')}>Workshop</a>
+                    <a onClick={() => handleUserClick('/workshop')}>My drinks</a>
                     <a onClick={() => handleUserClick('/browse')}>Browse</a>
                     <a onClick={() => handleUserClick('/inventory-page')}>Inventory Page</a>
                 </div>

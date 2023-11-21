@@ -3,13 +3,13 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, firestore } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-
+import './RegisterPage.css';
 const RegisterPage = () => {
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const navigate = useNavigate();
-		const validatePassword = (password) => {
+	const validatePassword = (password) => {
 		return password.length >= 6 &&
 			/[A-Z]/.test(password) &&
 			/[a-z]/.test(password) &&
@@ -55,6 +55,14 @@ const RegisterPage = () => {
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/personalRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/savedRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/inventory`, 'initial'), {});
+			await setDoc(doc(firestore, 'users', userCredential.user.uid), {
+				username: lowerCaseUsername,
+				originalUsername: username,
+				email: lowerCaseEmail,
+				friendRequests: [], // Initialize friendRequests as an empty array
+				friendsList: [] // Also initialize friendsList as an empty array if needed
+				// Add other fields as needed
+			});		
 			navigate('/workshop');
 		} catch (error) {
 			console.error('Error during registration: ', error);
@@ -72,8 +80,8 @@ const RegisterPage = () => {
 		<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
 		<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
 		<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-		<button onClick={handleRegister}>Register</button>
-		<button onClick={() => navigate('/login')}>Back to Login</button>
+		<button className="common-button-style" onClick={handleRegister}>Register</button>
+		<button className="common-button-style" onClick={() => navigate('/login')}>Back to Login</button>
 		</div>
 	);
 };
