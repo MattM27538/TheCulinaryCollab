@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { firestore } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
-const UsersListPage = () => {
+const SocialPage = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -43,5 +43,5 @@ const UsersListPage = () => {
   );
 };
 
-export default UsersListPage;
+export default SocialPage;
 
