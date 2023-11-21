@@ -13,12 +13,11 @@ import ViewSavedRecipeModal from './ViewSavedRecipeModal';
 const WorkshopPage = () => {
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);
-	const [recipes, setRecipes] = useState([]);
-	const [publicRecipes, setPublicRecipes] = useState([]);
+	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);	
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [personalRecipes, setPersonalRecipes] = useState([]);
 	const [savedRecipes, setSavedRecipes] = useState([]);
+	const [publicRecipes, setPublicRecipes] = useState([]);
 	const [allUserRecipes, setAllUserRecipes] = useState([]);
 	const [originalUsername, setOriginalUsername] = useState('');
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -99,12 +98,6 @@ const WorkshopPage = () => {
 		}
 	};
 
-	const fetchRecipes = async () => {
-		const recipesCollection = collection(firestore, 'recipes');
-		const querySnapshot = await getDocs(recipesCollection);
-		const recipesData = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-		setRecipes(recipesData);
-	};
 	const fetchPublicRecipes = async () => {
 		const publicRecipesCollection = collection(firestore, 'public-recipes');
 		const querySnapshot = await getDocs(publicRecipesCollection);
@@ -164,6 +157,7 @@ const WorkshopPage = () => {
 		fetchPersonalRecipes();
 		fetchSavedRecipes();
 		fetchAllUserRecipes();
+		fetchUserData();
 	}, []);
 
 
@@ -173,8 +167,8 @@ const WorkshopPage = () => {
 				const userSnap = await getDoc(userRef);
 
 				if (userSnap.exists()) {
-
-					setOriginalUsername(userSnap.data().originalUsername);
+					const userData = userSnap.data();
+					setOriginalUsername(userData.originalUsername);
 				}
 
 				const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
