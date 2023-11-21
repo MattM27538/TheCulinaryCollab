@@ -13,11 +13,16 @@ const EditRecipeModal = ({ isOpen, onClose, updateRecipe, recipe}) => {
 		setIngredients([...ingredients, { ingredient: '', amount: '', unit: '' }]);
 	};
 
-	const handleIngredientChange = (index, field, value) => {
-		const updatedIngredients = [...ingredients];
-		updatedIngredients[index][field] = value;
-		setIngredients(updatedIngredients);
-	};
+const handleIngredientChange = (index, field, value) => {
+    const newIngredients = ingredients.map((ingredient, i) => {
+        if (i === index) {
+            return { ...ingredient, [field]: value };
+        }
+        return ingredient;
+    });
+    setIngredients(newIngredients);
+};
+
 
 	const handleRemoveIngredient = (index) => {
 		const updatedIngredients = [...ingredients];
@@ -25,36 +30,38 @@ const EditRecipeModal = ({ isOpen, onClose, updateRecipe, recipe}) => {
 		setIngredients(updatedIngredients);
 	};
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		const updatedRecipeData = {
-			name,
-			timing,
-			taste,
-			ingredients: ingredients.filter(ing => ing.ingredient !== ''),
-			preparation,
-			visibility,
-		};
-		await updateRecipe(updatedRecipeData);
+const handleSubmit = async (e) => {
+	console.log("FFFFFFFFFF");
+    e.preventDefault();
+    const updatedRecipeData = {
+        name,
+        timing,
+        taste,
+        ingredients: ingredients.filter(ing => ing.ingredient !== ''),
+        preparation,
+        visibility,
+    };
+    await updateRecipe(updatedRecipeData);
 		setName('');
 		setTiming('');
 		setTaste('');
 		setPreparation('');
 		setIngredients([{ ingredient: '', amount: '', unit: '' }]);
 		setVisibility('private');
-
+		console.log("1111111111");
 		onClose();
 	};
-	useEffect(() => {
-		if (recipe) {
-			setName(recipe.name);
-			setTiming(recipe.timing);
-			setTaste(recipe.taste);
-			setPreparation(recipe.preparation);
-			setIngredients(recipe.ingredients || []);
-			setVisibility(recipe.visibility || 'private');
-		}
-	}, [recipe]);
+useEffect(() => {
+    if (recipe) {
+        setName(recipe.name);
+        setTiming(recipe.timing);
+        setTaste(recipe.taste);
+        setPreparation(recipe.preparation);
+        setIngredients(recipe.ingredients || []);
+        setVisibility(recipe.visibility || 'private');
+    }
+}, [recipe]);
+
 
 
 	return (
@@ -120,7 +127,7 @@ const EditRecipeModal = ({ isOpen, onClose, updateRecipe, recipe}) => {
 		</button>
 		</div>
 		<div className="save-button">
-		<button type="submit">Save</button>
+		<button type="submit" onClick={handleSubmit}>Save</button>
 		</div>
 		</div>
 		</form>

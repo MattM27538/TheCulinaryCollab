@@ -64,6 +64,7 @@ const WorkshopPage = () => {
 	};
 
 	const openEditModal = (recipe) => {
+		console.log("Opening edit modal for recipe: ", recipe);
 		setSelectedRecipeForEdit(recipe);
 		setIsEditModalOpen(true);
 	};
@@ -142,7 +143,7 @@ const WorkshopPage = () => {
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} />
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
-		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={openEditModal} />
+<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
 		{/* Test set recipes */}
 		<h2>All Recipes</h2>
 		<div className="recipe-list">
