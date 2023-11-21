@@ -143,7 +143,7 @@ const WorkshopPage = () => {
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} />
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
-<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
+		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
 		{/* Test set recipes */}
 		<h2>All Recipes</h2>
 		<div className="recipe-list">
@@ -170,24 +170,23 @@ const WorkshopPage = () => {
 		</div>
 		</div>
 
-		{/* Personal recipes */}
 		<h2>My Personal Recipes</h2>
 		<div className="recipe-list">
 		<div className="recipe-scroll">
-		{personalRecipes.map((recipe) => (
+		{personalRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openPersonalViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
 			</div>
 		))}
 		</div>
-		</div>
+		</div>	
 
-		{/* Saved recipes */}
+		{/* Saved Recipes */}
 		<h2>My Saved Recipes</h2>
 		<div className="recipe-list">
 		<div className="recipe-scroll">
-		{savedRecipes.map((recipe) => (
+		{savedRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
