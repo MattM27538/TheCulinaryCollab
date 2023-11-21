@@ -47,8 +47,9 @@ const WorkshopPage = () => {
 	const addRecipe = async (recipeData) => {
 		try {
 			if (auth.currentUser) {
+				fetchUserData();
 				const user = auth.currentUser;
-				const username = user.displayName;
+				const username = originalUsername;
 				const email = user.email;
 
 				const extendedRecipeData = {
@@ -151,8 +152,9 @@ const WorkshopPage = () => {
 			console.error('Error updating recipe: ', error);
 		}
 	};
+
 	useEffect(() => {
-		
+
 		fetchPublicRecipes();
 		fetchPersonalRecipes();
 		fetchSavedRecipes();
@@ -161,25 +163,25 @@ const WorkshopPage = () => {
 	}, []);
 
 
-		const fetchUserData = async () => {
-			if (auth.currentUser) {
-				const userRef = doc(firestore, 'users', auth.currentUser.uid);
-				const userSnap = await getDoc(userRef);
+	const fetchUserData = async () => {
+		if (auth.currentUser) {
+			const userRef = doc(firestore, 'users', auth.currentUser.uid);
+			const userSnap = await getDoc(userRef);
 
-				if (userSnap.exists()) {
-					const userData = userSnap.data();
-					setOriginalUsername(userData.originalUsername);
-				}
-
-				const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
-				const personalRecipesSnap = await getDocs(personalRecipesCol);
-				setPersonalRecipes(personalRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-
-				const savedRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
-				const savedRecipesSnap = await getDocs(savedRecipesCol);
-				setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+			if (userSnap.exists()) {
+				const userData = userSnap.data();
+				setOriginalUsername(userData.originalUsername);
 			}
-		};
+
+			const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
+			const personalRecipesSnap = await getDocs(personalRecipesCol);
+			setPersonalRecipes(personalRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+
+			const savedRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
+			const savedRecipesSnap = await getDocs(savedRecipesCol);
+			setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+		}
+	};
 
 
 
@@ -199,6 +201,7 @@ const WorkshopPage = () => {
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
 		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
+
 		{/* Universal Recipes */}
 		<h2>All User Recipes</h2>
 		<div className="recipe-list">
@@ -218,7 +221,7 @@ const WorkshopPage = () => {
 		{publicRecipes.map((recipe) => ( // Always render publicRecipes
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
-			{/* Additional recipe details */}
+			{}
 			</div>
 		))}
 		</div>
@@ -244,10 +247,12 @@ const WorkshopPage = () => {
 			<div key={recipe.id} className="recipe-item" onClick={() => openSavedRecipeModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
+			{recipe.createdBy && <p className="recipe-origin">Created by {recipe.createdBy.username}</p>}
 			</div>
 		))}
 		</div>
 		</div>
+
 		</div>
 	);
 };
