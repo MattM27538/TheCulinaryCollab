@@ -66,6 +66,7 @@ useEffect(() => {
 
 	return (
 		<div className={`modal ${isOpen ? 'open' : ''}`}>
+		
 		<div className="modal-content">
 		<form onSubmit={handleSubmit}>
 		<label>Name</label>
@@ -133,6 +134,7 @@ useEffect(() => {
 		</form>
 		</div>
 		</div>
+		
 	);
 };
 

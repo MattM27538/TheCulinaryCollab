@@ -11,7 +11,6 @@ const BrowseRecipesPage = () => {
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [currentUserEmail, setCurrentEmail] = useState(null);
-
 	const recipesPerPage = 8;
 
 	const fetchRecipes = async () => {

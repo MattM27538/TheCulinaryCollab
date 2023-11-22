@@ -1,8 +1,9 @@
 import React from 'react';
 import './ViewRecipeModal.css';
-
+import { auth } from '../firebase';
 const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) => {
 	if (!recipe) return null;
+	const isLoggedIn = auth.currentUser != null;
 
 	return (
 		<div className={`modal ${isOpen ? 'open' : ''}`}>
@@ -21,7 +22,7 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		<p><strong>Preparation:</strong> {recipe.preparation}</p>
 		<p><strong>Visibility:</strong> {recipe.visibility}</p>
 		{}
-		{showSaveOption && <button onClick={onSave}>Save Recipe</button>}
+		{showSaveOption && isLoggedIn && <button onClick={onSave}>Save Recipe</button>}
 		<button onClick={onClose}>Close</button>
 		</div>
 		</div>

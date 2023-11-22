@@ -6,14 +6,23 @@ import './Header.css';
 
 const Header = ({ pageTitle }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const navigate = useNavigate();
+    const [showSocialsDropdown, setShowSocialsDropdown] = useState(false);
+    const [showDrinksDropdown, setShowDrinksDropdown] = useState(false);
+	const navigate = useNavigate();
 
+	    const closeAllDropdowns = () => {
+        setShowSocialsDropdown(false);
+        setShowDrinksDropdown(false);
+    };
+
+	    const handleUserClick = (path) => {
+        closeAllDropdowns();
+        navigate(path);
+    };
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setIsLoggedIn(!!user); // Sets isLoggedIn to true if user is logged in, otherwise false
-        });
-
-        // Cleanup subscription on component unmount
+            setIsLoggedIn(!!user); 
+	});
         return () => unsubscribe();
     }, []);
 
@@ -26,29 +35,46 @@ const Header = ({ pageTitle }) => {
         }
     };
 
-    return (
+return (
         <header className="header">
-            <div className="logo-container" onClick={() => navigate('/')}>
-                <span className="dummy-logo">🔶</span>
-                <h1>Cullinary Collab</h1>
+            <div className="logo-container" onClick={() => {closeAllDropdowns(); navigate('/')}}>
+                <img src="/Logo.png" alt="Culinary Collab Logo" className="header-logo" />
+                <h1 className="header-title">The Culinary Collab</h1>
             </div>
-            <h2>{pageTitle}</h2>
-            <nav className="navigation">
-	    	<button onClick={() => navigate('/profile')}> Profile </button>
-	    	<button onClick={() => navigate('/social')}> Socials </button>
-                <button onClick={() => navigate('/public-recipes')}>Public Recipes</button>
-                <button onClick={() => navigate('/workshop')}>Workshop</button>
-                <button onClick={() => navigate('/browse')}>Browse</button>
-                <button onClick={() => navigate('/inventory-page')}>Inventory Page</button>
-                {isLoggedIn ? (
-                    <button onClick={handleLogout}>Logout</button>
-                ) : (
-                    <button onClick={() => navigate('/login')}>Login</button>
-                )}
-            </nav>
-        </header>
-    );
+        <h2>{pageTitle}</h2>
+        <nav className="navigation">
+            <div className="dropdown">
+                <button onClick={() => {
+                    closeAllDropdowns();
+                    setShowSocialsDropdown(!showSocialsDropdown);
+                }}>Socials</button>
+                <div className={`dropdown-content ${showSocialsDropdown ? 'show' : ''}`}>
+                    <a onClick={() => handleUserClick('/profile')}>Profile</a>
+                    <a onClick={() => handleUserClick('/social')}>Social</a>
+                </div>
+            </div>
+            <div className="dropdown">
+                <button onClick={() => {
+                    closeAllDropdowns();
+                    setShowDrinksDropdown(!showDrinksDropdown);
+                }}>Drinks</button>
+                <div className={`dropdown-content ${showDrinksDropdown ? 'show' : ''}`}>
+                    <a onClick={() => handleUserClick('/workshop')}>Workshop</a>
+                    <a onClick={() => handleUserClick('/browse')}>Browse</a>
+                    <a onClick={() => handleUserClick('/inventory-page')}>Inventory Page</a>
+                </div>
+            </div>
+            {isLoggedIn ? (
+                <button onClick={() => {
+                    closeAllDropdowns();
+                    handleLogout();
+                }}>Logout</button>
+            ) : (
+                <button onClick={() => handleUserClick('/login')}>Login</button>
+            )}
+        </nav>
+    </header>
+);
 };
-
 export default Header;
 
