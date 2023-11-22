@@ -3,10 +3,13 @@ import './LandingPage.css';
 import './WorkshopPage.css';
 import { firestore, auth } from '../firebase';
 import { addDoc, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import AddRecipeModal from './AddRecipeModal';
 import ViewRecipeModal from './ViewRecipeModal';
 import RecipeSearchBar from './RecipeSearchBar';
 import EditRecipeModal from './EditRecipeModal';
+import RecipeItem from './RecipeItem';
 import ViewPersonalRecipeModal from './ViewPersonalRecipeModal';
 import ViewSavedRecipeModal from './ViewSavedRecipeModal';
 
@@ -61,7 +64,7 @@ const WorkshopPage = () => {
 					}
 				};
 				const personalRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
-				await addDoc(personalRecipesRef, recipeData);
+				await addDoc(personalRecipesRef, extendedRecipeData);
 
 				const allUserRecipesRef = collection(firestore, `allUserRecipes`);
 				await addDoc(allUserRecipesRef, extendedRecipeData);
@@ -86,6 +89,7 @@ const WorkshopPage = () => {
 			console.error('Error removing saved recipe: ', error);
 		}
 	};
+
 	const saveRecipe = async (recipe) => {
 		try {
 			if (auth.currentUser) {
@@ -104,7 +108,7 @@ const WorkshopPage = () => {
 		const querySnapshot = await getDocs(publicRecipesCollection);
 		const publicRecipesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 		setPublicRecipes(publicRecipesData);
-		
+
 	};
 	const fetchPersonalRecipes = async () => {
 		const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
@@ -157,8 +161,8 @@ const WorkshopPage = () => {
 	useEffect(() => {
 		fetchPublicRecipes();
 		if (user) {
-		fetchPersonalRecipes(); // eslint-disable-next-line
-		fetchSavedRecipes(); // eslint-disable-next-line
+			fetchPersonalRecipes();
+			fetchSavedRecipes();
 		} else {
 			console.log("Not logged in");
 		}
@@ -201,7 +205,7 @@ const WorkshopPage = () => {
 
 		<button onClick={openAddModal}>Add Recipe</button>
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
-		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)}/>
+		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe}/>
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
 		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
@@ -222,7 +226,7 @@ const WorkshopPage = () => {
 		<h2>Public Recipes</h2>
 		<div className="recipe-list">
 		<div className="recipe-scroll">
-		{publicRecipes.map((recipe) => ( // Always render publicRecipes
+		{publicRecipes.map((recipe) => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
@@ -237,12 +241,15 @@ const WorkshopPage = () => {
 		{personalRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openPersonalViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
-			{}
+			{recipe.createdBy ? (
+				<p className="recipe-origin">Created by {recipe.createdBy.username}</p>
+			) : (
+				<p className="recipe-origin">Unknown Creator</p>
+			)}
 			</div>
 		))}
 		</div>
-		</div>	
-
+		</div>
 		{/* Saved Recipes */}
 		<h2>My Saved Recipes</h2>
 		<div className="recipe-list">
@@ -250,13 +257,15 @@ const WorkshopPage = () => {
 		{savedRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openSavedRecipeModal(recipe)}>
 			<h3>{recipe.name}</h3>
-			{}
-			{recipe.createdBy && <p className="recipe-origin">Created by {recipe.createdBy.username}</p>}
+			{recipe.createdBy ? (
+				<p className="recipe-origin">Created by {recipe.createdBy.username}</p>
+			) : (
+				<p className="recipe-origin">Public Recipe</p>
+			)}
 			</div>
 		))}
 		</div>
 		</div>
-
 		</div>
 	);
 };
