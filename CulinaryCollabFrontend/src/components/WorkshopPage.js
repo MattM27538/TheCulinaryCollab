@@ -3,20 +3,19 @@ import './LandingPage.css';
 import './WorkshopPage.css';
 import { firestore, auth } from '../firebase';
 import { addDoc, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import AddRecipeModal from './AddRecipeModal';
 import ViewRecipeModal from './ViewRecipeModal';
 import RecipeSearchBar from './RecipeSearchBar';
 import EditRecipeModal from './EditRecipeModal';
-import RecipeItem from './RecipeItem';
 import ViewPersonalRecipeModal from './ViewPersonalRecipeModal';
 import ViewSavedRecipeModal from './ViewSavedRecipeModal';
-
+import RecipeItem from './RecipeItem';
 const WorkshopPage = () => {
 	const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);	
+	const [isSavedRecipeModalOpen, setIsSavedRecipeModalOpen] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [personalRecipes, setPersonalRecipes] = useState([]);
 	const [savedRecipes, setSavedRecipes] = useState([]);
@@ -59,7 +58,7 @@ const WorkshopPage = () => {
 					...recipeData,
 					createdBy: {
 						uid: user.uid,
-						username: username,	
+						username: username,
 						email: email
 					}
 				};
@@ -190,16 +189,53 @@ const WorkshopPage = () => {
 			setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 		}
 	};
+	const handleDrop = async (item, collectionName) => {
+		if (item.type === 'public' && collectionName !== 'public') {
+			
+			const newRecipeData = { ...item.recipe, visibility: collectionName };
+			await addDoc(collection(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`), newRecipeData);
+		} else if (item.type !== collectionName) {
+			
+			await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/${item.type}Recipes`, item.id));
+			await setDoc(doc(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`, item.id), item.recipe);
+		}
+		
+		fetchPersonalRecipes();
+		fetchSavedRecipes();
+	};
+
+	const Collection = ({ recipes, type }) => {
+		const [, drop] = useDrop(() => ({
+			accept: 'recipe',
+			drop: (item) => handleDrop(item, type),
+			canDrop: (item, monitor) => type !== 'public',
+			collect: (monitor) => ({
+				isOver: monitor.isOver(),
+				canDrop: monitor.canDrop(),
+			}),
+		}));
+
+		return (
+			<div ref={drop} className={`recipe-list ${type}`}>
+			<div className="recipe-scroll">
+			{recipes.map((recipe) => (
+				<RecipeItem key={recipe.id} recipe={recipe} type={type} onOpenModal={type === 'public' ? openViewModal : type === 'personal' ? openPersonalViewModal : openSavedRecipeModal} />
+			))}
+			</div>
+			</div>
+		);
+	};
 
 
 
 	return (
+		<DndProvider backend={HTML5Backend}>
 		<div className="landing-page">
 		<h1>Welcome {originalUsername}</h1>
 		<RecipeSearchBar
 		publicRecipes={publicRecipes}
 		personalRecipes={personalRecipes}
-		savedRecipes={savedRecipes}	
+		savedRecipes={savedRecipes}
 		onView={openViewModal}
 		/>
 
@@ -207,7 +243,7 @@ const WorkshopPage = () => {
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe}/>
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
-		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>	
+		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
 
 		{/* Universal Recipes */}
@@ -215,60 +251,24 @@ const WorkshopPage = () => {
 		<div className="recipe-list">
 		<div className="recipe-scroll">
 		{allUserRecipes.map(recipe => (
-			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
-			<h3>{recipe.name}</h3>
-			{}
-			</div>
+			<RecipeItem key={recipe.id} recipe={recipe} type="universal" onOpenModal={openViewModal} />
 		))}
 		</div>
-		</div>	
+		</div>
 		{/* Public recipes */}
 		<h2>Public Recipes</h2>
-		<div className="recipe-list">
-		<div className="recipe-scroll">
-		{publicRecipes.map((recipe) => (
-			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
-			<h3>{recipe.name}</h3>
-			{}
-			</div>
-		))}
-		</div>
-		</div>
+		<Collection recipes={publicRecipes.filter(recipe => recipe.id !== 'initial')} type="public" handleDrop={handleDrop} />
 
+		{/* Personal Recipes */}
 		<h2>My Personal Recipes</h2>
-		<div className="recipe-list">
-		<div className="recipe-scroll">
-		{personalRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
-			<div key={recipe.id} className="recipe-item" onClick={() => openPersonalViewModal(recipe)}>
-			<h3>{recipe.name}</h3>
-			{recipe.createdBy ? (
-				<p className="recipe-origin">Created by {recipe.createdBy.username}</p>
-			) : (
-				<p className="recipe-origin">Unknown Creator</p>
-			)}
-			</div>
-		))}
-		</div>
-		</div>
+		<Collection recipes={personalRecipes.filter(recipe => recipe.id !== 'initial')} type="personal" handleDrop={handleDrop} />
+
 		{/* Saved Recipes */}
 		<h2>My Saved Recipes</h2>
-		<div className="recipe-list">
-		<div className="recipe-scroll">
-		{savedRecipes.filter(recipe => recipe && recipe.name).map(recipe => (
-			<div key={recipe.id} className="recipe-item" onClick={() => openSavedRecipeModal(recipe)}>
-			<h3>{recipe.name}</h3>
-			{recipe.createdBy ? (
-				<p className="recipe-origin">Created by {recipe.createdBy.username}</p>
-			) : (
-				<p className="recipe-origin">Public Recipe</p>
-			)}
-			</div>
-		))}
+		<Collection recipes={savedRecipes.filter(recipe => recipe.id !== 'initial')} type="saved" handleDrop={handleDrop} />
 		</div>
-		</div>
-		</div>
+		</DndProvider>
 	);
 };
 
 export default WorkshopPage;
-
