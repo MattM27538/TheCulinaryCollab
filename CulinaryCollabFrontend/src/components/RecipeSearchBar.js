@@ -5,11 +5,17 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 	const [searchResults, setSearchResults] = useState([]);
 	
 	const handleInputChange = (e) => {
-		setSearchTerm(e.target.value);
+		const term = e.target.value;
+		setSearchTerm(term);
 		console.log(e);
-		handleSearch(e);
+		handleSearch(term);
 	};
 	const handleSearch = (e) => {
+		if (e.length <= 1){
+			setSearchResults([]);
+			return;
+		}
+		else {
 		const lowercasedTerm = searchTerm.toLowerCase();
 		const allRecipes = [...personalRecipes, ...savedRecipes, ...publicRecipes];
 		const filtered = allRecipes.filter(recipe => {
@@ -20,6 +26,7 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 		});
 		console.log(e);
 		setSearchResults(filtered);
+		}
 	};
 	const isPersonalRecipe = (recipe) => {
 		return personalRecipes.some(pr => pr.id === recipe.id);
