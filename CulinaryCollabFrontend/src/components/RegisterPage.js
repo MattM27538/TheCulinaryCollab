@@ -75,7 +75,7 @@ const RegisterPage = () => {
 		<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
 		<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
 		<button onClick={handleRegister}>Register</button>
-		<button onClick={() => navigate('/workshop')}>Back to Login</button>
+		<button onClick={() => navigate('/login')}>Back to Login</button>
 		</div>
 	);
 };

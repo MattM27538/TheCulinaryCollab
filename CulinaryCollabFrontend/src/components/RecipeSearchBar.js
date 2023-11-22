@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './RecipeSearchBar.css';
 const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchResults, setSearchResults] = useState([]);
@@ -8,17 +8,20 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 		setSearchTerm(e.target.value);
 		console.log(searchTerm);
 	};
-
 	const handleSearch = () => {
 		const lowercasedTerm = searchTerm.toLowerCase();
-		const filtered = [...personalRecipes, ...savedRecipes,...publicRecipes].filter(
-			(recipe) =>
-			(recipe.name && recipe.name.toLowerCase().includes(lowercasedTerm)) ||
-			(recipe.ingredients &&
-				recipe.ingredients.some((ingredient) => ingredient.ingredient.toLowerCase().includes(lowercasedTerm)))
-		);
+		const allRecipes = [...personalRecipes, ...savedRecipes, ...publicRecipes];
+		const filtered = allRecipes.filter(recipe => {
+			const recipeName = recipe.name ? recipe.name.toLowerCase() : '';
+			const ingredientsMatch = recipe.ingredients ? recipe.ingredients.some(ingredient => ingredient.ingredient.toLowerCase().includes(lowercasedTerm)) : false;
+			const isNotInitial = recipe.id !== 'initial';
+			return (recipeName.includes(lowercasedTerm) || ingredientsMatch) && isNotInitial;
+		});
 		setSearchResults(filtered);
 	};
+	const isPersonalRecipe = (recipe) => {
+		return personalRecipes.some(pr => pr.id === recipe.id);
+	}
 	return (
 		<div>
 		<div className="search-bar-container">
@@ -30,12 +33,19 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 		className="search-bar"
 		/>
 		<button onClick={handleSearch} className="search-button">Search</button>
-		</div>
+		</div>            
 		<ul className="search-results-list">
 		{searchResults.map((recipe, index) => (
 			<li key={index} className="search-result-item">
 			{recipe.name}
-			<button onClick={() => onView(recipe)} className="view-recipe-button">View</button>
+			<button onClick={() => onView(recipe)} className="view-recipe-button">
+			View
+			</button>
+			{isPersonalRecipe(recipe) ? 
+				<span className="recipe-creator"> Created by you</span> :
+				(recipe.createdBy && recipe.createdBy.username && 
+					<span className="recipe-creator"> Created by {recipe.createdBy.username}</span>)
+			}
 			</li>
 		))}
 		</ul>
@@ -44,4 +54,3 @@ const RecipeSearchBar = ({personalRecipes, savedRecipes, publicRecipes, onView }
 };
 
 export default RecipeSearchBar;
-

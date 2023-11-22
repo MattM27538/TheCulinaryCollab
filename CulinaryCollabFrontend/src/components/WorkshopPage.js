@@ -23,9 +23,9 @@ const WorkshopPage = () => {
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isPersonalViewModalOpen, setIsPersonalViewModalOpen] = useState(false);
 	const [selectedRecipeForEdit, setSelectedRecipeForEdit] = useState(null);
+	const user = auth.currentUser;
 	const openAddModal = () => setIsAddModalOpen(true);
 	const closeAddModal = () => setIsAddModalOpen(false);
-
 	const openViewModal = (recipe) => {
 		setSelectedRecipe(recipe);
 		setIsViewModalOpen(true);
@@ -104,6 +104,7 @@ const WorkshopPage = () => {
 		const querySnapshot = await getDocs(publicRecipesCollection);
 		const publicRecipesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 		setPublicRecipes(publicRecipesData);
+		
 	};
 	const fetchPersonalRecipes = async () => {
 		const personalRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/personalRecipes`);
@@ -154,13 +155,16 @@ const WorkshopPage = () => {
 	};
 
 	useEffect(() => {
-
 		fetchPublicRecipes();
-		fetchPersonalRecipes();
-		fetchSavedRecipes();
+		if (user) {
+		fetchPersonalRecipes(); // eslint-disable-next-line
+		fetchSavedRecipes(); // eslint-disable-next-line
+		} else {
+			console.log("Not logged in");
+		}
 		fetchAllUserRecipes();
 		fetchUserData();
-	}, []);
+	}, [user]);
 
 
 	const fetchUserData = async () => {

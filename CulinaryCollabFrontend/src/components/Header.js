@@ -34,6 +34,8 @@ const Header = ({ pageTitle }) => {
             </div>
             <h2>{pageTitle}</h2>
             <nav className="navigation">
+	    	<button onClick={() => navigate('/profile')}> Profile </button>
+	    	<button onClick={() => navigate('/social')}> Socials </button>
                 <button onClick={() => navigate('/public-recipes')}>Public Recipes</button>
                 <button onClick={() => navigate('/workshop')}>Workshop</button>
                 <button onClick={() => navigate('/browse')}>Browse</button>
