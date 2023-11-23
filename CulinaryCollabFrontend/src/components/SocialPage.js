@@ -1,20 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, storage, auth } from '../firebase';
-import { collection, getDocs, doc, getDoc, updateDoc, arrayRemove, arrayUnion, runTransaction } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayRemove, arrayUnion, runTransaction, query, where, orderBy } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import './SocialPage.css';
-
 const SocialPage = () => {
 	const [users, setUsers] = useState([]);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [friendRequests, setFriendRequests] = useState([]);
 	const [showDropdown, setShowDropdown] = useState(false);
-	const [selectedUser, setSelectedUser] = useState(null); // Define this state if you're using it
+	const [selectedUser, setSelectedUser] = useState(null);
 	const [friends, setFriends] = useState([]);
-	const [isModalOpen, setIsModalOpen] = useState(false);  // Define this state if you're using it
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [currentMessage, setCurrentMessage] = useState('');
+	const [messages, setMessages] = useState([]);
+	const [currentChatPartner, setCurrentChatPartner] = useState(null);
 	const navigate = useNavigate();
 	const defaultProfilePicUrl = 'https://firebasestorage.googleapis.com/v0/b/culinarycollab.appspot.com/o/profilePictures%2FD.png?alt=media&token=a23fae95-8ed6-4c3f-81da-9a49e92aa543';
+
+
+	const selectChatPartner = (friend) => {
+		navigate(`/chat/${friend.uid}`);
+	};
+
+	const sendMessage = async () => {
+		if (currentChatPartner && currentMessage.trim() !== '') {
+			const message = {
+				senderId: auth.currentUser.uid,
+				receiverId: currentChatPartner.uid,
+				timestamp: new Date(),
+				text: currentMessage
+			};
+
+
+			await addDoc(collection(firestore, 'messages'), message);
+
+			setCurrentMessage('');
+			fetchMessagesForChat(currentChatPartner);
+		}
+	};
+
+
+	const fetchMessagesForChat = async (friend) => {
+		if (!friend) return;
+
+		const messagesQuery = query(
+			collection(firestore, 'messages'),
+			where('senderId', 'in', [auth.currentUser.uid, friend.uid]),
+			where('receiverId', 'in', [auth.currentUser.uid, friend.uid]),
+			orderBy('timestamp', 'asc')
+		);
+
+		const querySnapshot = await getDocs(messagesQuery);
+		const fetchedMessages = querySnapshot.docs.map(doc => doc.data());
+
+		setMessages(fetchedMessages);
+	};
 
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -50,19 +91,19 @@ const SocialPage = () => {
 				try {
 					const userSnap = await getDoc(userRef);
 					if (userSnap.exists() && userSnap.data().friendsList) {
-						// Fetch friends' user data based on their UIDs
+
 						const friendsUids = userSnap.data().friendsList;
 						const friendsPromises = friendsUids.map(async (friendUid) => {
 							const friendSnap = await getDoc(doc(firestore, 'users', friendUid));
 							if (friendSnap.exists()) {
-								// Get the profile picture URL, if available
-								let profilePicUrl = defaultProfilePicUrl; // Your default profile picture URL
+
+								let profilePicUrl = defaultProfilePicUrl;
 								try {
 									const profilePicRef = ref(storage, `profilePictures/${friendUid}`);
 									profilePicUrl = await getDownloadURL(profilePicRef);
 								} catch (error) {
 									console.error('Error fetching profile picture for friend:', error);
-									// If there's an error, the default profile picture URL will be used
+
 								}
 								return {
 									uid: friendUid,
@@ -75,7 +116,7 @@ const SocialPage = () => {
 						});
 
 						const friendsData = await Promise.all(friendsPromises);
-						setFriends(friendsData.filter(Boolean)); // Filter out any null values and update state
+						setFriends(friendsData.filter(Boolean));
 					}
 				} catch (error) {
 					console.error('Error fetching friends list:', error);
@@ -99,7 +140,13 @@ const SocialPage = () => {
 				}
 			}
 		};
+		const fetchMessages = async () => {
+			const querySnapshot = await getDocs(collection(firestore, 'messages'));
+			const fetchedMessages = querySnapshot.docs.map(doc => doc.data());
+			setMessages(fetchedMessages);
+		};
 
+		fetchMessages();
 		fetchUsers();
 		fetchFriendRequests();
 	}, []);
@@ -196,10 +243,10 @@ const SocialPage = () => {
 		))}
 		</ul>
 
-		{}
-		{/* ... existing users list and user search logic ... */}
-		</div>
 
+
+		</div>
+		{/* Friends request section */}
 		<div className="friend-requests-section">
 		<button onClick={() => setShowDropdown(!showDropdown)}>Friend Requests</button>
 		{showDropdown && (
@@ -207,7 +254,7 @@ const SocialPage = () => {
 			<ul>
 			{friendRequests.map((request, index) => (
 				<li key={index}>
-				{request.username} {/* Display the username of the request sender */}
+				{request.username}
 				<button onClick={() => handleAccept(request.uid)}>Accept</button>
 				<button onClick={() => handleReject(request.uid)}>Reject</button>
 				</li>
@@ -217,20 +264,36 @@ const SocialPage = () => {
 		)}
 
 		</div>
+		{/* Friends list */}
 		<div className="friends-list">
 		<h2>My Friends</h2>
 		<ul>
-		{friends.map((friend, index) => (
-			<li key={index} className="friend-item">
+		{friends.map((friend) => (
+			<li key={friend.uid} className="friend-item" onClick={() => selectChatPartner(friend)}>
 			<span className="friend-username">{friend.username}</span>
-			<img src={friend.profilePic} alt={`${friend.username}'s Profile`} className="friend-profile-picture" />
+			<img src={friend.profilePic} alt={`${friend.username}'s profile`} className="friend-profile-picture" />
 			</li>
 		))}
 		</ul>
 		</div>
+		{/* Messaging interface */}
+		<div className="messaging-interface">
+		{currentChatPartner && <h2>Chat with {currentChatPartner.username}</h2>}
+		<div className="messages-display">
+		{/* Display messages */}
 		</div>
+		{currentChatPartner && (
+			<>
+			<input
+			type="text"
+			value={currentMessage}
+			onChange={(e) => setCurrentMessage(e.target.value)}
+			/>
+			<button onClick={sendMessage}>Send</button>
+			</>
+		)}
+		</div>              </div>
 	);
 };
 
 export default SocialPage;
-
