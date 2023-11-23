@@ -45,22 +45,24 @@ const BrowseRecipesPage = () => {
 	};
 
 
-	const saveRecipe = async (recipe) => {
-		try {
-			if (auth.currentUser) {
-				const recipeToSave = {
-					...recipe,
-					originalCreator: recipe.createdBy ? (recipe.createdBy.username || recipe.createdBy.email) : 'Public',
-				};
-				const savedRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
-				await addDoc(savedRecipesRef, recipeToSave);
-				console.log('Recipe saved successfully');
-				//fetchSavedRecipes();
-			}
-		} catch (error) {
-			console.error('Error saving recipe: ', error);
-		}
-	};
+ const saveRecipe = async (recipe) => {
+    try {
+      if (auth.currentUser) {
+        // Add additional information about the original creator of the recipe
+        const recipeToSave = {
+          ...recipe,
+          originalCreator: recipe.createdBy ? (recipe.createdBy.username || recipe.createdBy.email) : 'Public',
+          savedFromUsername: recipe.createdBy ? recipe.createdBy.username : 'Public' // Add the username of the recipe's original creator
+        };
+
+        const savedRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
+        await addDoc(savedRecipesRef, recipeToSave);
+        console.log('Recipe saved successfully');
+      }
+    } catch (error) {
+      console.error('Error saving recipe: ', error);
+    }
+  };
 	const goToNextPage = () => {
 		setCurrentPage(currentPage + 1);
 	};
