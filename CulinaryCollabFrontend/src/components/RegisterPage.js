@@ -17,7 +17,7 @@ const RegisterPage = () => {
 	};
 
 	const validateUsername = (username) => {
-		const isValidLength = username.length > 4 && username.length < 15;
+		const isValidLength = username.length >= 4 && username.length < 15;
 		const hasValidCharacters = /^[a-zA-Z0-9_]+$/.test(username);
 		const noSpaces = !/\s/.test(username);
 		return isValidLength && hasValidCharacters && noSpaces;

@@ -20,7 +20,7 @@ const LoginPage = () => {
 					loginInput = usernameDoc.data().email;
 					loginInput = loginInput.toLowerCase();
 				} else {
-					console.error('Username not found');
+					alert('Username not found');
 					return;
 				}
 			} catch (error) {
@@ -33,7 +33,7 @@ const LoginPage = () => {
 			await signInWithEmailAndPassword(auth, loginInput, password);
 			navigate('/workshop');
 		} catch (error) {
-			console.error('Error during login: ', error);
+			alert('Incorrect password');
 		}
 	};
 	return (
