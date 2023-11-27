@@ -127,9 +127,8 @@ const SampleInventory = [
 const InventoryPage = ({ location }) => {
     const [inventory, setInventory] = useState(SampleInventory);
     const [isAddItemModalOpen, setAddItemModalOpen] = useState(false);
-
     const userId = location.state?.userId || 'default-user-id';
-    		
+	
     const addItem = async (item) => {
         try {
             const inventoryRef = collection(firestore, `users/${userId}/inventory`);

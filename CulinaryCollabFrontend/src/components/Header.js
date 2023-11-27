@@ -35,46 +35,62 @@ const Header = ({ pageTitle }) => {
 		}
 	};
 
-	return (
-		<header className="header">
-		<div className="logo-container" onClick={() => {closeAllDropdowns(); navigate('/')}}>
-		<img src="/Logo.png" alt="Culinary Collab Logo" className="header-logo" />
-		<h1 className="header-title">The Culinary Collab</h1>
-		</div>
-		<h2>{pageTitle}</h2>
-		<nav className="navigation">
-		<div className="dropdown">
-		<button onClick={() => {
-			closeAllDropdowns();
-			setShowSocialsDropdown(!showSocialsDropdown);
-		}}>Socials</button>
-		<div className={`dropdown-content ${showSocialsDropdown ? 'show' : ''}`}>
-		<Link to="/profile">My Profile</Link>
-		<Link to="/social">Social</Link>
-		</div>
-		</div>
-		<div className="dropdown">
-		<button onClick={() => {
-			closeAllDropdowns();
-			setShowDrinksDropdown(!showDrinksDropdown);
-		}}>Drinks</button>
-		<div className={`dropdown-content ${showDrinksDropdown ? 'show' : ''}`}>
-		<Link to="/workshop">My drinks</Link>
-		<Link to="/browse">Browse</Link>
-		<Link to="/inventory-page">Inventory Page</Link> 
-		</div>
-		</div>
-		{isLoggedIn ? (
-			<button onClick={() => {
-				closeAllDropdowns();
-				handleLogout();
-			}}>Logout</button>
-		) : (
-			<button onClick={() => handleUserClick('/login')}>Login</button>
-		)}
-		</nav>
-		</header>
-	);
+return (
+    <header className="header">
+        <div className="logo-container" onClick={() => {closeAllDropdowns(); navigate('/')}}>
+            <img src="/Logo.png" alt="Culinary Collab Logo" className="header-logo" />
+            <h1 className="header-title">The Culinary Collab</h1>
+        </div>
+        <h2>{pageTitle}</h2>
+        <nav className="navigation">
+            <div className="dropdown">
+                <button 
+                    className="button-text-black" 
+                    onClick={() => {
+                        closeAllDropdowns();
+                        setShowSocialsDropdown(!showSocialsDropdown);
+                    }}>
+                    Socials
+                </button>
+                <div className={`dropdown-content ${showSocialsDropdown ? 'show' : ''}`}>
+                    <Link to="/profile">My Profile</Link>
+                    <Link to="/social">Social</Link>
+                </div>
+            </div>
+            <div className="dropdown">
+                <button 
+                    className="button-text-black" 
+                    onClick={() => {
+                        closeAllDropdowns();
+                        setShowDrinksDropdown(!showDrinksDropdown);
+                    }}>
+                    Drinks
+                </button>
+                <div className={`dropdown-content ${showDrinksDropdown ? 'show' : ''}`}>
+                    <Link to="/workshop">My drinks</Link>
+                    <Link to="/browse">Browse</Link>
+                    <Link to="/inventory-page">Inventory Page</Link>
+                </div>
+            </div>
+            {isLoggedIn ? (
+                <button 
+                    className="button-text-black" 
+                    onClick={() => {
+                        closeAllDropdowns();
+                        handleLogout();
+                    }}>
+                    Logout
+                </button>
+            ) : (
+                <button 
+                    className="button-text-black" 
+                    onClick={() => handleUserClick('/login')}>
+                    Login
+                </button>
+            )}
+        </nav>
+    </header>
+);
 };
 export default Header;
 
