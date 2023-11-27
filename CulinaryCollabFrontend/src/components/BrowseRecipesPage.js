@@ -4,7 +4,7 @@ import { firestore, auth } from '../firebase';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import RecipeSearchBarBrowse from './RecipeSearchBarBrowse';
 import ViewRecipeModal from './ViewRecipeModal';
-
+const user = auth.currentUser;
 const BrowseRecipesPage = () => {
 	const [recipes, setRecipes] = useState([]);
 	const [currentPage, setCurrentPage] = useState(0);
@@ -79,6 +79,10 @@ const BrowseRecipesPage = () => {
 			setCurrentEmail(auth.currentUser.email);
 		}
 	}, []);
+
+	/*if (!user) {
+		return <div>Please log in to view this page .</div>;
+	}*/
 	return (
 		<div className="browse-recipes-page">
 		<h2>Browse Recipes</h2>

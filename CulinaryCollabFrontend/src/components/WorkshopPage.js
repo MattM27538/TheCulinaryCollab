@@ -226,7 +226,9 @@ const WorkshopPage = () => {
 		);
 	};
 
-
+if (!user) {
+	return <div>Please log in to view this page. </div>;
+}
 
 	return (
 		<DndProvider backend={HTML5Backend}>
@@ -238,7 +240,6 @@ const WorkshopPage = () => {
 		savedRecipes={savedRecipes}
 		onView={openViewModal}
 		/>
-
 		<button onClick={openAddModal}>Add Recipe</button>
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe}/>

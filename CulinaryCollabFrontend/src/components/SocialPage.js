@@ -4,6 +4,7 @@ import { collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayRemove, array
 import { ref, getDownloadURL } from 'firebase/storage';
 import { useNavigate } from 'react-router-dom';
 import './SocialPage.css';
+//const user = auth.currentUser;
 const SocialPage = () => {
 	const [users, setUsers] = useState([]);
 	const [searchTerm, setSearchTerm] = useState('');
