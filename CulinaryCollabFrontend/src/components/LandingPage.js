@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 function LandingPage() {
 	return (
@@ -7,12 +6,12 @@ function LandingPage() {
 		<div className="landing-content">
 		{}
 		</div>
-
-		<div className="about-button-container">
-		<Link to="/about">
-		<button className="about-button">About</button>
-		</Link>
-		</div>
+		<div className="about-content">
+            		<h1>About Us</h1>
+            		<div className="about-box">
+                		<p>In TheCullinaryCollab, we are just a small group of students who had an idea of being able to learn and share new drinks to anyone they want! We plan to allow users to share their creations with other users and be able to keep up with any and all recipies!</p>
+            		</div>
+        	</div>
 		</div>
 	);
 }
