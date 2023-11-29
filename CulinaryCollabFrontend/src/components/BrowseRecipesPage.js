@@ -1,17 +1,17 @@
-	import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BrowseRecipesPage.css';
 import { firestore, auth } from '../firebase';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import RecipeSearchBarBrowse from './RecipeSearchBarBrowse';
 import ViewRecipeModal from './ViewRecipeModal';
-
+const user = auth.currentUser;
 const BrowseRecipesPage = () => {
     const [recipes, setRecipes] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
     const [currentUserEmail, setCurrentEmail] = useState(null);
-    const recipesPerPage = 20; // Updated for 5x4 grid
+    const recipesPerPage = 20;
 
     const fetchRecipes = async () => {
         const publicRecipesCollection = collection(firestore, 'public-recipes');
