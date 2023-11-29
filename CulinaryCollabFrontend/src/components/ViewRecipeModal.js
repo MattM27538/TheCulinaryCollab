@@ -20,9 +20,8 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		))}
 		</ul>
 		<p><strong>Preparation:</strong> {recipe.preparation}</p>
-		<p><strong>Visibility:</strong> {recipe.visibility}</p>
 		{}
-		{showSaveOption && isLoggedIn && <button onClick={onSave}>Save Recipe</button>}
+		 {showSaveOption && isLoggedIn && <button onClick={onSave}>Save Recipe</button>}
 		<button onClick={onClose}>Close</button>
 		</div>
 		</div>

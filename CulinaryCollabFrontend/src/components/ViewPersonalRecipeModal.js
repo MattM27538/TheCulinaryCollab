@@ -23,7 +23,6 @@ const PersonalRecipeViewModal = ({ isOpen, onClose, recipe, onEdit }) => {
 		))}
 		</ul>
 		<p><strong>Preparation:</strong> {recipe.preparation}</p>
-		<p><strong>Visibility:</strong> {recipe.visibility}</p>
 		<button onClick={onClose}>Close</button>
 		</div>
 		</div>

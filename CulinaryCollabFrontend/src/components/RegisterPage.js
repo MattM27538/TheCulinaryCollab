@@ -55,6 +55,7 @@ const RegisterPage = () => {
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/personalRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/savedRecipes`, 'initial'), {});
 			await setDoc(doc(firestore, `users/${userCredential.user.uid}/inventory`, 'initial'), {});
+			await setDoc(doc(firestore, `users/${userCredential.user.uid}/Profile-display`, 'initial'), {});
 			await setDoc(doc(firestore, 'users', userCredential.user.uid), {
 				username: lowerCaseUsername,
 				originalUsername: username,
