@@ -386,19 +386,28 @@ const WorkshopPage = () => {
 		</div>
 		{/* Public recipes */}
 		<h2>Public Recipes</h2>
+		<div className="collection-box">
 		<Collection recipes={publicRecipes.filter(recipe => recipe.id !== 'initial')} type="public" handleDrop={handleDrop} />
+		</div>
 
 		{/* Personal Recipes */}
 		<h2>My Personal Recipes</h2>
+		<div className="collection-box">
 		<Collection recipes={personalRecipes.filter(recipe => recipe.id !== 'initial')} type="personal" handleDrop={handleDrop} />
+		</div>
 
 		{/* Saved Recipes */}
 		<h2>My Saved Recipes</h2>
+		<div className="collection-box">
 		<Collection recipes={savedRecipes.filter(recipe => recipe.id !== 'initial')} type="saved" handleDrop={handleDrop} />
+		</div>
 
 		{/* Profile-display Recipes */}
 		<h2>Profile Display Recipes</h2>
+		<div className="collection-box">
 		<Collection recipes={profileDisplayRecipes.filter(recipe => recipe.id !== 'initial')} type="profileDisplay" handleDrop={handleDrop} />
+		</div>
+
 		</div>
 		</DndProvider>
 	);
