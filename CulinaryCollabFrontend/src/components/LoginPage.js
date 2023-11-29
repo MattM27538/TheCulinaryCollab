@@ -8,7 +8,6 @@ const LoginPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const navigate = useNavigate();
-
 	const handleLogin = async () => {
 		let loginInput = email.toLowerCase();
 
@@ -24,13 +23,14 @@ const LoginPage = () => {
 					return;
 				}
 			} catch (error) {
-				console.error('Error fetching username: ', error);
+				alert('Error fetching username: ', error);
 				return;
 			}
 		}
 
 		try {
 			await signInWithEmailAndPassword(auth, loginInput, password);
+			alert('Success!');
 			navigate('/workshop');
 		} catch (error) {
 			alert('Incorrect password');
