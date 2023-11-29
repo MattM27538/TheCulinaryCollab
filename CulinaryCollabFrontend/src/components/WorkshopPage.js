@@ -148,14 +148,36 @@ const WorkshopPage = () => {
 		setIsEditModalOpen(false);
 		setSelectedRecipeForEdit(null);
 	};
-	const openPersonalViewModal = (recipe) => {
+	const openPersonalViewModal = (recipe, collectionType) => {
 		setSelectedRecipe(recipe);
 		setIsPersonalViewModalOpen(true);
+		setOriginalCollection(collectionType);
 	};
 
 	const closePersonalViewModal = () => {
 		setIsPersonalViewModalOpen(false);
 		setSelectedRecipe(null);
+	};
+
+	const deleteRecipe = async (recipeId) => {
+		try {
+			let recipeRef;
+			if (originalCollection === 'personal') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, recipeId);
+			} else if (originalCollection === 'saved') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, recipeId);
+			} else {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, recipeId);
+			}
+
+			await deleteDoc(recipeRef);
+			console.log('Recipe deleted successfully');
+			fetchPersonalRecipes();
+			fetchSavedRecipes();
+			fetchProfileDisplayRecipes();
+		} catch (error) {
+			console.error('Error deleting recipe: ', error);
+		}
 	};
 
 	const updateRecipe = async (updatedRecipeData) => {
@@ -254,6 +276,15 @@ const WorkshopPage = () => {
 		fetchProfileDisplayRecipes();
 	};
 
+	const onPersonalRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'personal');
+	};
+	const onSavedRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'saved');
+	};
+	const onProfileDisplayRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'profileDisplay');
+	};
 	const onPersonalRecipeEdit = (recipe) => {
 		openEditModal(recipe, 'personal');
 	};
@@ -262,6 +293,24 @@ const WorkshopPage = () => {
 	};
 	const onProfileDisplayRecipeEdit = (recipe) => {
 		openEditModal(recipe, 'profileDisplay');
+	};
+
+	const openCorrectEditModal = () => {
+		if (!selectedRecipe) return;
+
+		switch (originalCollection) {
+			case 'personal':
+				onPersonalRecipeEdit(selectedRecipe);
+				break;
+			case 'saved':
+				onSavedRecipeEdit(selectedRecipe);
+				break;
+			case 'profileDisplay':
+				onProfileDisplayRecipeEdit(selectedRecipe);
+				break;
+			default: 
+				break;
+		}
 	};
 
 	const Collection = ({ recipes, type }) => {
@@ -277,14 +326,18 @@ const WorkshopPage = () => {
 
 		const onRecipeClick = (recipe) => {
 			setSelectedRecipe(recipe);
+			setOriginalCollection(type);
 			if (type === 'public') {
 				setIsViewModalOpen(true);
 			}else if (type === 'personal') {
-				onPersonalRecipeEdit(recipe);
+				//	onPersonalRecipeEdit(recipe);
+				onPersonalRecipeView(recipe);
 			} else if (type === 'saved') {
-				onSavedRecipeEdit(recipe);
+				//	onSavedRecipeEdit(recipe);
+				onSavedRecipeView(recipe);
 			} else if (type === 'profileDisplay') {
-				onProfileDisplayRecipeEdit(recipe);
+				//	onProfileDisplayRecipeEdit(recipe);
+				onProfileDisplayRecipeView(recipe);
 			}
 		};
 
@@ -319,7 +372,7 @@ const WorkshopPage = () => {
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe}/>
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
-		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>
+		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={openCorrectEditModal} onDelete={deleteRecipe}/>
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
 
 		{/* Universal Recipes */}
