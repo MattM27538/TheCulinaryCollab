@@ -11,7 +11,6 @@ const RecipeSearchBarBrowse = ({ recipes, onView }) => {
 			handleSearch(term);
 		}
 	};
-
 	const handleSearch = (e) => {
 		if (e.length <= 1) {
 			setSearchResults([]);
@@ -29,7 +28,6 @@ const RecipeSearchBarBrowse = ({ recipes, onView }) => {
 			setSearchResults(filtered);
 		}
 	};
-
 	return (
 		<div>
 		<div className="search-bar-container">
@@ -53,6 +51,4 @@ const RecipeSearchBarBrowse = ({ recipes, onView }) => {
 		</div>
 	);
 };
-
 export default RecipeSearchBarBrowse;
-
