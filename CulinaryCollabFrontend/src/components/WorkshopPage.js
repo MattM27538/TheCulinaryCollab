@@ -26,6 +26,7 @@ const WorkshopPage = () => {
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isPersonalViewModalOpen, setIsPersonalViewModalOpen] = useState(false);
 	const [selectedRecipeForEdit, setSelectedRecipeForEdit] = useState(null);
+	const [originalCollection, setOriginalCollection] = useState('');
 	const user = auth.currentUser;
 	const openAddModal = () => setIsAddModalOpen(true);
 	const closeAddModal = () => setIsAddModalOpen(false);
@@ -136,9 +137,10 @@ const WorkshopPage = () => {
 	};
 
 
-	const openEditModal = (recipe) => {
+	const openEditModal = (recipe, collectionType) => {
 		console.log("Opening edit modal for recipe: ", recipe);
 		setSelectedRecipeForEdit(recipe);
+		setOriginalCollection(collectionType);
 		setIsEditModalOpen(true);
 	};
 
@@ -168,16 +170,25 @@ const WorkshopPage = () => {
 		};
 
 		try {
-			const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
+			let recipeRef;
+			if (originalCollection === 'personal') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
+			} else if (originalCollection === 'saved') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, selectedRecipeForEdit.id);
+			} else {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, selectedRecipeForEdit.id);
+			}
+
 			await setDoc(recipeRef, updatedData);
 			console.log('Recipe updated successfully');
 			fetchPersonalRecipes();
+			fetchSavedRecipes();
+			fetchProfileDisplayRecipes();
+
 		} catch (error) {
 			console.error('Error updating recipe: ', error);
 		}
 	};
-
-
 
 	useEffect(() => {
 		fetchPublicRecipes();
@@ -243,6 +254,16 @@ const WorkshopPage = () => {
 		fetchProfileDisplayRecipes();
 	};
 
+	const onPersonalRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'personal');
+	};
+	const onSavedRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'saved');
+	};
+	const onProfileDisplayRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'profileDisplay');
+	};
+
 	const Collection = ({ recipes, type }) => {
 		const [, drop] = useDrop(() => ({
 			accept: 'recipe',
@@ -258,8 +279,12 @@ const WorkshopPage = () => {
 			setSelectedRecipe(recipe);
 			if (type === 'public') {
 				setIsViewModalOpen(true);
-			} else {
-				setIsPersonalViewModalOpen(true);
+			}else if (type === 'personal') {
+				onPersonalRecipeEdit(recipe);
+			} else if (type === 'saved') {
+				onSavedRecipeEdit(recipe);
+			} else if (type === 'profileDisplay') {
+				onProfileDisplayRecipeEdit(recipe);
 			}
 		};
 
