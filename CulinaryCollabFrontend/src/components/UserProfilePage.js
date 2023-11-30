@@ -9,7 +9,7 @@ const UserProfilePage = () => {
 	const [originalUsername, setOriginalUsername] = useState('');
 	const { uid } = useParams();
 	const navigate = useNavigate();
-	const [userProfile, setUserProfile] = useState(null);
+	const [userProfile, setUserProfile] = useState(null); 
 	const [profilePic, setProfilePic] = useState('');
 	const [personalRecipes, setPersonalRecipes] = useState([]);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -179,6 +179,32 @@ const UserProfilePage = () => {
 		return <div>Loading...</div>;
 	}
 
+	//Check if the current user is already friends or has sent a friend request
+	const isFriend = userProfile.friendsList && userProfile.friendsList.includes(auth.currentUser.uid);
+	const hasSentFriendRequest =
+	  userProfile.friendRequests &&
+	  userProfile.friendRequests.some((request) => request.uid === auth.currentUser.uid);
+
+	//Render the friend request button conditionally
+	const renderFriendRequestButton = () => {
+		if (!auth.currentUser) {
+		  return null; //Render nothing if the user is not logged in
+		}
+	
+		if (auth.currentUser.uid === uid) {
+		  return null; //Do not display friend request button for the user's own profile
+		}
+	
+		if (isFriend) {
+		  return <p>You are already friends.</p>; //Display a message if already friends
+		}
+	
+		if (hasSentFriendRequest) {
+		  return <p>You already sent a friend request.</p>; //Display a message if a friend request is already sent
+		}
+
+	};
+
 	return (
 		<div className="user-profile-page">
 		<div className="user-info-box">
@@ -189,6 +215,7 @@ const UserProfilePage = () => {
 		<div className="user-action-buttons">
 		<button className="back-button" onClick={() => navigate('/social')}>Back to Social Page</button>
 		<button className="send-friend-request" onClick={() => handleSendFriendRequest(uid)}>Send Friend Request</button>
+		{renderFriendRequestButton()} {/* Render friend request button conditionally */}
 		</div>
 
 		{/* Grid display for recipes */}
