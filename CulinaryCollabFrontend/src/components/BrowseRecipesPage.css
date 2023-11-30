@@ -1,8 +1,7 @@
 .recipes-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 16px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
 }
 
 .recipe-item {
@@ -17,13 +16,22 @@
     font-size: small;
 }
 .common-button-style {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
- }
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
 
 .common-button-style:hover {
-  background: rgba(255, 255, 255, 0.9);
+    background-color: #005700;
+    color: #e0e0e0;
 }
+

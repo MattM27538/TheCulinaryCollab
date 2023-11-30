@@ -196,7 +196,6 @@ const UserProfilePage = () => {
 		{currentRecipes.map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
-			{}
 			</div>
 		))}
 		</div>
