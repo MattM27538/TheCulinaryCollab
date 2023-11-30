@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword} from 'firebase/auth';
+import {sendEmailVerification } from "firebase/auth";
 import { auth, firestore } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -60,10 +61,13 @@ const RegisterPage = () => {
 				username: lowerCaseUsername,
 				originalUsername: username,
 				email: lowerCaseEmail,
-				friendRequests: [], // Initialize friendRequests as an empty array
-				friendsList: [] // Also initialize friendsList as an empty array if needed
-				// Add other fields as needed
-			});		
+				friendRequests: [],
+				friendsList: []
+			});
+			
+			sendEmailVerification(auth.currentUser)
+				.then(() => {
+			  });
 			navigate('/workshop');
 		} catch (error) {
 			console.error('Error during registration: ', error);
@@ -75,6 +79,7 @@ const RegisterPage = () => {
 			}
 		}
 	};
+	
 
 	return (
 		<div className="register-page">

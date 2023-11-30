@@ -169,9 +169,9 @@ const UserProfilePage = () => {
 		try {
 			const savedRecipesRef = collection(firestore, `users/${user.uid}/savedRecipes`);
 			await addDoc(savedRecipesRef, extendedRecipeData);
-			console.log('Recipe saved successfully');
+			alert('Recipe saved successfully!');
 		} catch (error) {
-			console.error('Error saving recipe: ', error);
+			alert('Error saving recipe: ', error);
 		}
 	};
 

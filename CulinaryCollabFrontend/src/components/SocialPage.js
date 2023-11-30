@@ -153,9 +153,9 @@ const SocialPage = () => {
 	}, []);
 
 	const handleAccept = async (requestingUserid) => {
-		console.log("handle accept called <---");
-		console.log("Current user: ", auth.currentUser);
-		console.log("Requesting user: ", requestingUserid);
+		//console.log("handle accept called <---");
+		//console.log("Current user: ", auth.currentUser);
+		//console.log("Requesting user: ", requestingUserid);
 		const currentUserid = auth.currentUser.uid;
 
 		const currentUserRef = doc(firestore, 'users', currentUserid);
@@ -179,7 +179,7 @@ const SocialPage = () => {
 					friendsList: arrayUnion(currentUserid)
 				});
 			});
-			console.log("Friend request accepted");
+			alert("Friend request accepted!");
 			setFriendRequests(friendRequests.filter(req => req.uid !== requestingUserid));
 			const newFriendData = {
 				uid: requestingUserid,
@@ -188,7 +188,7 @@ const SocialPage = () => {
 			};
 			setFriends([...friends, newFriendData]);
 		} catch (error) {
-			console.error("Error accepting friend request: ", error);
+			alert("Error accepting friend request: ", error);
 		}
 	};
 
@@ -206,12 +206,12 @@ const SocialPage = () => {
 				});
 				setFriendRequests(updatedFriendRequests);
 
-				console.log("Friend request rejected");
+				alert("Friend request rejected");
 			} else {
-				console.log("Current user document not found");
+				alert("Current user document not found");
 			}
 		} catch (error) {
-			console.error("Error rejecting friend request: ", error);
+			alert("Error rejecting friend request: ", error);
 		}
 	};
 
