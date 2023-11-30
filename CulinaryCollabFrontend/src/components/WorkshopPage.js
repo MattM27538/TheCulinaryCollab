@@ -21,10 +21,12 @@ const WorkshopPage = () => {
 	const [savedRecipes, setSavedRecipes] = useState([]);
 	const [publicRecipes, setPublicRecipes] = useState([]);
 	const [allUserRecipes, setAllUserRecipes] = useState([]);
+	const [profileDisplayRecipes, setProfileDisplayRecipes] = useState([]);
 	const [originalUsername, setOriginalUsername] = useState('');
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [isPersonalViewModalOpen, setIsPersonalViewModalOpen] = useState(false);
 	const [selectedRecipeForEdit, setSelectedRecipeForEdit] = useState(null);
+	const [originalCollection, setOriginalCollection] = useState('');
 	const user = auth.currentUser;
 	const openAddModal = () => setIsAddModalOpen(true);
 	const closeAddModal = () => setIsAddModalOpen(false);
@@ -120,15 +122,30 @@ const WorkshopPage = () => {
 		setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 	};
 
+
 	const fetchAllUserRecipes = async () => {
 		const allRecipesCollection = collection(firestore, 'allUserRecipes');
 		const allRecipesSnap = await getDocs(allRecipesCollection);
 		setAllUserRecipes(allRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 	};
+	const fetchProfileDisplayRecipes = async () => {
+		if (auth.currentUser) {
+			const recipesRef = collection(firestore, `users/${auth.currentUser.uid}/Profile-display`);
+			const displaySnapshot = await getDocs(recipesRef);
+			setProfileDisplayRecipes(displaySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+		}
+	};
 
+<<<<<<< HEAD
 	const openEditModal = (recipe) => {
 		alert("Opening edit modal for recipe: ", recipe);
+=======
+
+	const openEditModal = (recipe, collectionType) => {
+		console.log("Opening edit modal for recipe: ", recipe);
+>>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 		setSelectedRecipeForEdit(recipe);
+		setOriginalCollection(collectionType);
 		setIsEditModalOpen(true);
 	};
 
@@ -136,22 +153,73 @@ const WorkshopPage = () => {
 		setIsEditModalOpen(false);
 		setSelectedRecipeForEdit(null);
 	};
-	const openPersonalViewModal = (recipe) => {
+	const openPersonalViewModal = (recipe, collectionType) => {
 		setSelectedRecipe(recipe);
 		setIsPersonalViewModalOpen(true);
+		setOriginalCollection(collectionType);
 	};
 
 	const closePersonalViewModal = () => {
 		setIsPersonalViewModalOpen(false);
 		setSelectedRecipe(null);
 	};
+<<<<<<< HEAD
 	const updateRecipe = async (updatedRecipeData) => {
 		try {
 			const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
 			await setDoc(recipeRef, updatedRecipeData);
 			alert('Recipe updated successfully');
+=======
+>>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 
+	const deleteRecipe = async (recipeId) => {
+		try {
+			let recipeRef;
+			if (originalCollection === 'personal') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, recipeId);
+			} else if (originalCollection === 'saved') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, recipeId);
+			} else {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, recipeId);
+			}
+
+			await deleteDoc(recipeRef);
+			console.log('Recipe deleted successfully');
 			fetchPersonalRecipes();
+			fetchSavedRecipes();
+			fetchProfileDisplayRecipes();
+		} catch (error) {
+			console.error('Error deleting recipe: ', error);
+		}
+	};
+
+	const updateRecipe = async (updatedRecipeData) => {
+		const currentUserData = {
+			uid: auth.currentUser.uid,
+			username: originalUsername,
+			email: auth.currentUser.email
+		};
+		const updatedData = {
+			...updatedRecipeData,
+			createdBy: currentUserData
+		};
+
+		try {
+			let recipeRef;
+			if (originalCollection === 'personal') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
+			} else if (originalCollection === 'saved') {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, selectedRecipeForEdit.id);
+			} else {
+				recipeRef = doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, selectedRecipeForEdit.id);
+			}
+
+			await setDoc(recipeRef, updatedData);
+			console.log('Recipe updated successfully');
+			fetchPersonalRecipes();
+			fetchSavedRecipes();
+			fetchProfileDisplayRecipes();
+
 		} catch (error) {
 			alert('Error updating recipe: ', error);
 		}
@@ -160,6 +228,7 @@ const WorkshopPage = () => {
 	useEffect(() => {
 		fetchPublicRecipes();
 		if (user) {
+			fetchProfileDisplayRecipes();
 			fetchPersonalRecipes();
 			fetchSavedRecipes();
 		} else {
@@ -187,21 +256,74 @@ const WorkshopPage = () => {
 			const savedRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
 			const savedRecipesSnap = await getDocs(savedRecipesCol);
 			setSavedRecipes(savedRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+
+			const profileRecipesCol = collection(firestore, `users/${auth.currentUser.uid}/Profile-display`);
+			const profileRecipesSnap = await getDocs(profileRecipesCol);
+			setProfileDisplayRecipes(profileRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
 		}
 	};
 	const handleDrop = async (item, collectionName) => {
 		if (item.type === 'public' && collectionName !== 'public') {
-			
 			const newRecipeData = { ...item.recipe, visibility: collectionName };
-			await addDoc(collection(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`), newRecipeData);
+			if (collectionName === 'profileDisplay') {
+				await addDoc(collection(firestore, `users/${auth.currentUser.uid}/Profile-display`), newRecipeData);
+			} else {
+				await addDoc(collection(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`), newRecipeData);
+			}
 		} else if (item.type !== collectionName) {
-			
-			await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/${item.type}Recipes`, item.id));
-			await setDoc(doc(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`, item.id), item.recipe);
+			if (item.type !== 'public') {
+				await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/${item.type}Recipes`, item.id));
+			}
+			if (item.type === 'profileDisplay' && collectionName !== 'profileDisplay') {
+				await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id));
+			}
+
+			if (collectionName === 'profileDisplay') {
+				await setDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id), item.recipe);
+			} else {
+				await setDoc(doc(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`, item.id), item.recipe);
+			}
 		}
-		
 		fetchPersonalRecipes();
 		fetchSavedRecipes();
+		fetchProfileDisplayRecipes();
+	};
+
+	const onPersonalRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'personal');
+	};
+	const onSavedRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'saved');
+	};
+	const onProfileDisplayRecipeView = (recipe) => {
+		openPersonalViewModal(recipe, 'profileDisplay');
+	};
+	const onPersonalRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'personal');
+	};
+	const onSavedRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'saved');
+	};
+	const onProfileDisplayRecipeEdit = (recipe) => {
+		openEditModal(recipe, 'profileDisplay');
+	};
+
+	const openCorrectEditModal = () => {
+		if (!selectedRecipe) return;
+
+		switch (originalCollection) {
+			case 'personal':
+				onPersonalRecipeEdit(selectedRecipe);
+				break;
+			case 'saved':
+				onSavedRecipeEdit(selectedRecipe);
+				break;
+			case 'profileDisplay':
+				onProfileDisplayRecipeEdit(selectedRecipe);
+				break;
+			default: 
+				break;
+		}
 	};
 
 	const Collection = ({ recipes, type }) => {
@@ -215,11 +337,28 @@ const WorkshopPage = () => {
 			}),
 		}));
 
+		const onRecipeClick = (recipe) => {
+			setSelectedRecipe(recipe);
+			setOriginalCollection(type);
+			if (type === 'public') {
+				setIsViewModalOpen(true);
+			}else if (type === 'personal') {
+				//	onPersonalRecipeEdit(recipe);
+				onPersonalRecipeView(recipe);
+			} else if (type === 'saved') {
+				//	onSavedRecipeEdit(recipe);
+				onSavedRecipeView(recipe);
+			} else if (type === 'profileDisplay') {
+				//	onProfileDisplayRecipeEdit(recipe);
+				onProfileDisplayRecipeView(recipe);
+			}
+		};
+
 		return (
 			<div ref={drop} className={`recipe-list ${type}`}>
 			<div className="recipe-scroll">
 			{recipes.map((recipe) => (
-				<RecipeItem key={recipe.id} recipe={recipe} type={type} onOpenModal={type === 'public' ? openViewModal : type === 'personal' ? openPersonalViewModal : openSavedRecipeModal} />
+				<RecipeItem key={recipe.id} recipe={recipe} type={type} onOpenModal={() => onRecipeClick(recipe)} />
 			))}
 			</div>
 			</div>
@@ -227,6 +366,10 @@ const WorkshopPage = () => {
 	};
 
 
+
+	if (!user) {
+		return <div>Please log in to view this page. </div>;
+	}
 
 	return (
 		<DndProvider backend={HTML5Backend}>
@@ -238,12 +381,11 @@ const WorkshopPage = () => {
 		savedRecipes={savedRecipes}
 		onView={openViewModal}
 		/>
-
 		<button onClick={openAddModal}>Add Recipe</button>
 		<AddRecipeModal isOpen={isAddModalOpen} onClose={closeAddModal} addRecipe={addRecipe} />
 		<ViewRecipeModal isOpen={isViewModalOpen} onClose={closeViewModal} recipe={selectedRecipe} onSave={() => saveRecipe(selectedRecipe)} showSaveOption={selectedRecipe}/>
 		<EditRecipeModal isOpen={isEditModalOpen} onClose={closeEditModal} updateRecipe={updateRecipe} recipe={selectedRecipe} />
-		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={() => openEditModal(selectedRecipe)}/>
+		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={openCorrectEditModal} onDelete={deleteRecipe}/>
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
 
 		{/* Universal Recipes */}
@@ -266,6 +408,10 @@ const WorkshopPage = () => {
 		{/* Saved Recipes */}
 		<h2>My Saved Recipes</h2>
 		<Collection recipes={savedRecipes.filter(recipe => recipe.id !== 'initial')} type="saved" handleDrop={handleDrop} />
+
+		{/* Profile-display Recipes */}
+		<h2>Profile Display Recipes</h2>
+		<Collection recipes={profileDisplayRecipes.filter(recipe => recipe.id !== 'initial')} type="profileDisplay" handleDrop={handleDrop} />
 		</div>
 		</DndProvider>
 	);

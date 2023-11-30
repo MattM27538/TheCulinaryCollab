@@ -14,6 +14,8 @@ const UserProfilePage = () => {
 	const [personalRecipes, setPersonalRecipes] = useState([]);
 	const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [recipesPerPage] = useState(8);
 	const defaultProfilePicUrl = 'https://firebasestorage.googleapis.com/v0/b/culinarycollab.appspot.com/o/profilePictures%2FD.png?alt=media&token=a23fae95-8ed6-4c3f-81da-9a49e92aa543';
 	const handleSendFriendRequest = async (recipientId) => {
 		if (!auth.currentUser) {
@@ -62,6 +64,33 @@ const UserProfilePage = () => {
 		}
 	};
 
+	const indexOfLastRecipe = currentPage * recipesPerPage;
+	const indexOfFirstRecipe = indexOfLastRecipe - recipesPerPage;
+	const currentRecipes = personalRecipes.slice(indexOfFirstRecipe, indexOfLastRecipe);
+
+	const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+	const renderPaginationButtons = () => {
+		const pageNumbers = [];
+		for (let i = 1; i <= Math.ceil(personalRecipes.length / recipesPerPage); i++) {
+			pageNumbers.push(i);
+		}
+		return (
+			<div className="pagination">
+			<button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+			Previous
+			</button>
+			{pageNumbers.map(number => (
+				<button key={number} onClick={() => paginate(number)} className={currentPage === number ? 'active' : ''}>
+				{number}
+				</button>
+			))}
+			<button onClick={() => paginate(currentPage + 1)} disabled={currentPage === pageNumbers.length}>
+			Next
+			</button>
+			</div>
+		);
+	};
 	useEffect(() => {
 		const fetchUserProfile = async () => {
 			try {
@@ -85,15 +114,15 @@ const UserProfilePage = () => {
 		};
 
 		fetchUserProfile();
-	}, [uid]);
+	}, [uid, userProfile]);
 
 
 	useEffect(() => {
 		const fetchPersonalRecipes = async () => {
 			if (userProfile && auth.currentUser && userProfile.friendsList && userProfile.friendsList.includes(auth.currentUser.uid)) {
-				const personalRecipesRef = collection(firestore, `users/${uid}/personalRecipes`);
+				const displayRecipesRef = collection(firestore, `users/${uid}/Profile-display`);
 				try {
-					const querySnapshot = await getDocs(personalRecipesRef);
+					const querySnapshot = await getDocs(displayRecipesRef);
 					const fetchedRecipes = querySnapshot.docs
 						.map(doc => ({ id: doc.id, ...doc.data() }))
 						.filter(recipe => recipe.id !== 'initial');
@@ -162,15 +191,18 @@ const UserProfilePage = () => {
 		<button className="send-friend-request" onClick={() => handleSendFriendRequest(uid)}>Send Friend Request</button>
 		</div>
 
-		{/* Display personal recipes in a grid */}
+		{/* Grid display for recipes */}
 		<div className="personal-recipes-grid">
-		{personalRecipes.map(recipe => (
+		{currentRecipes.map(recipe => (
 			<div key={recipe.id} className="recipe-item" onClick={() => openViewModal(recipe)}>
 			<h3>{recipe.name}</h3>
 			{}
 			</div>
 		))}
 		</div>
+
+		{/* Render pagination buttons */}
+		{renderPaginationButtons()}
 
 		{/* Recipe view modal */}
 		<ViewRecipeModal 

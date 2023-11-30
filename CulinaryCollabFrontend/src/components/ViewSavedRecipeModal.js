@@ -23,10 +23,8 @@ const ViewSavedRecipeModal = ({ isOpen, onClose, recipe, onRemove }) => {
                     ))}
                 </ul>
                 <p><strong>Preparation:</strong> {recipe.preparation}</p>
-                <p><strong>Visibility:</strong> {recipe.visibility}</p>
-
                 <div className="modal-buttons">
-                    <button onClick={handleClick}>Remove from Saved</button>
+                    <button onClick={handleClick}>Remove Recipe</button>
                     <button onClick={onClose}>Close</button>
                 </div>
             </div>

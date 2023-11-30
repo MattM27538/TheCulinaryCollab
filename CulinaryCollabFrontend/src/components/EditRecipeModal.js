@@ -113,14 +113,6 @@ useEffect(() => {
 		<label>Preparation</label>
 		<textarea rows="4" value={preparation} onChange={(e) => setPreparation(e.target.value)} required />
 
-		<div className="visibility-section">
-		<label>Visibility</label>
-		<select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
-		<option value="private">Private</option>
-		<option value="public">Public</option>
-		</select>
-		</div>
-
 		<div className="button-row">
 		<div className="back-button">
 		<button type="button" onClick={onClose}>
