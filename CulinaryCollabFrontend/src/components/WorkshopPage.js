@@ -126,7 +126,8 @@ const WorkshopPage = () => {
 	const fetchAllUserRecipes = async () => {
 		const allRecipesCollection = collection(firestore, 'allUserRecipes');
 		const allRecipesSnap = await getDocs(allRecipesCollection);
-		setAllUserRecipes(allRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+		const allRecipes = allRecipesSnap.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+		setAllUserRecipes(allRecipes);
 	};
 	const fetchProfileDisplayRecipes = async () => {
 		if (auth.currentUser) {
@@ -250,6 +251,9 @@ const WorkshopPage = () => {
 		}
 	};
 	const handleDrop = async (item, collectionName) => {
+		if (item.type === 'public' && collectionName === 'allUserRecipes') {
+			return;
+		}
 		if (item.type === 'public' && collectionName !== 'public') {
 			const newRecipeData = { ...item.recipe, visibility: collectionName };
 			if (collectionName === 'profileDisplay') {
@@ -258,22 +262,28 @@ const WorkshopPage = () => {
 				await addDoc(collection(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`), newRecipeData);
 			}
 		} else if (item.type !== collectionName) {
-			if (item.type !== 'public') {
-				await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/${item.type}Recipes`, item.id));
-			}
-			if (item.type === 'profileDisplay' && collectionName !== 'profileDisplay') {
-				await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id));
-			}
-
-			if (collectionName === 'profileDisplay') {
-				await setDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id), item.recipe);
+			if (collectionName === 'allUserRecipes') {
+				const newRecipeData = { ...item.recipe };
+				await addDoc(collection(firestore, 'allUserRecipes'), newRecipeData);
 			} else {
-				await setDoc(doc(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`, item.id), item.recipe);
+				if (item.type !== 'public') {
+					await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/${item.type}Recipes`, item.id));
+				}
+				if (item.type === 'profileDisplay' && collectionName !== 'profileDisplay') {
+					await deleteDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id));
+				}
+
+				if (collectionName === 'profileDisplay') {
+					await setDoc(doc(firestore, `users/${auth.currentUser.uid}/Profile-display`, item.id), item.recipe);
+				} else {
+					await setDoc(doc(firestore, `users/${auth.currentUser.uid}/${collectionName}Recipes`, item.id), item.recipe);
+				}
 			}
 		}
 		fetchPersonalRecipes();
 		fetchSavedRecipes();
 		fetchProfileDisplayRecipes();
+		fetchAllUserRecipes();
 	};
 
 	const onPersonalRecipeView = (recipe) => {
@@ -352,6 +362,30 @@ const WorkshopPage = () => {
 		);
 	};
 
+	const handleTrashDrop = async (item) => {
+		console.log("item.type: ",item.type);
+		if (item.type === 'allUserRecipes') {
+			const recipeRef = doc(firestore, 'allUserRecipes', item.id);
+			await deleteDoc(recipeRef);
+			console.log('Recipe deleted successfully');
+			fetchAllUserRecipes();
+		}
+	};
+	const TrashBox = () => {
+		const [, drop] = useDrop({
+			accept: 'recipe',
+			drop: handleTrashDrop,
+		});
+
+
+		return (
+			<div ref={drop} className="trash-box">
+			<p>Delete Recipe from public Workshop</p>
+			</div>
+		);
+	};
+
+
 
 
 	if (!user) {
@@ -375,15 +409,25 @@ const WorkshopPage = () => {
 		<ViewPersonalRecipeModal isOpen={isPersonalViewModalOpen} onClose={closePersonalViewModal} recipe={selectedRecipe} onEdit={openCorrectEditModal} onDelete={deleteRecipe}/>
 		<ViewSavedRecipeModal isOpen={isSavedRecipeModalOpen} onClose={closeSavedRecipeModal} recipe={selectedRecipe} onRemove={() => removeSavedRecipe(selectedRecipe.id)}/>
 
-		{/* Universal Recipes */}
-		<h2>All User Recipes</h2>
-		<div className="recipe-list">
-		<div className="recipe-scroll">
-		{allUserRecipes.map(recipe => (
-			<RecipeItem key={recipe.id} recipe={recipe} type="universal" onOpenModal={openViewModal} />
-		))}
+		<div className="content-area">
+		{/* Recipes Display */}
+		<div className="recipes-display">
+		<h2>My Recipes in All User Recipes</h2>
+		<div className="collection-box">
+		<Collection 
+		recipes={allUserRecipes.filter(recipe => recipe.createdBy.uid === auth.currentUser.uid)} 
+		type="allUserRecipes" 
+		handleDrop={handleDrop} 
+		/>
+		</div> 
+		</div>
+
+		{/* Delete Area */}
+		<div className="delete-area">
+		<TrashBox />
 		</div>
 		</div>
+
 		{/* Public recipes */}
 		<h2>Public Recipes</h2>
 		<div className="collection-box">
