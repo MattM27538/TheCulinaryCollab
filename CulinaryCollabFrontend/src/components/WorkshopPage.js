@@ -69,13 +69,13 @@ const WorkshopPage = () => {
 
 				const allUserRecipesRef = collection(firestore, `allUserRecipes`);
 				await addDoc(allUserRecipesRef, extendedRecipeData);
-
-				console.log('Personal recipe saved successfully');
+					
+				alert('Personal recipe saved successfully');
 				fetchPersonalRecipes();
 				fetchAllUserRecipes();
 			}
 		} catch (error) {
-			console.error('Error saving personal recipe: ', error);
+			alert('Error saving personal recipe: ', error);
 		}
 	};
 	const removeSavedRecipe = async (recipeId) => {
@@ -83,11 +83,11 @@ const WorkshopPage = () => {
 			if (auth.currentUser && recipeId) {
 				const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, recipeId);
 				await deleteDoc(recipeRef);
-				console.log('Recipe removed successfully');
+				alert('Recipe removed successfully');
 				fetchSavedRecipes();
 			}
 		} catch (error) {
-			console.error('Error removing saved recipe: ', error);
+			alert('Error removing saved recipe: ', error);
 		}
 	};
 
@@ -96,11 +96,11 @@ const WorkshopPage = () => {
 			if (auth.currentUser) {
 				const savedRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
 				await addDoc(savedRecipesRef, recipe);
-				console.log('Recipe saved successfully');
+				alert('Recipe saved successfully');
 				fetchSavedRecipes();
 			}
 		} catch (error) {
-			console.error('Error saving recipe: ', error);
+			alert('Error saving recipe: ', error);
 		}
 	};
 
@@ -137,9 +137,14 @@ const WorkshopPage = () => {
 		}
 	};
 
+<<<<<<< HEAD
+	const openEditModal = (recipe) => {
+		alert("Opening edit modal for recipe: ", recipe);
+=======
 
 	const openEditModal = (recipe, collectionType) => {
 		console.log("Opening edit modal for recipe: ", recipe);
+>>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 		setSelectedRecipeForEdit(recipe);
 		setOriginalCollection(collectionType);
 		setIsEditModalOpen(true);
@@ -159,6 +164,14 @@ const WorkshopPage = () => {
 		setIsPersonalViewModalOpen(false);
 		setSelectedRecipe(null);
 	};
+<<<<<<< HEAD
+	const updateRecipe = async (updatedRecipeData) => {
+		try {
+			const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
+			await setDoc(recipeRef, updatedRecipeData);
+			alert('Recipe updated successfully');
+=======
+>>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 
 	const deleteRecipe = async (recipeId) => {
 		try {
@@ -209,7 +222,7 @@ const WorkshopPage = () => {
 			fetchProfileDisplayRecipes();
 
 		} catch (error) {
-			console.error('Error updating recipe: ', error);
+			alert('Error updating recipe: ', error);
 		}
 	};
 
@@ -220,7 +233,7 @@ const WorkshopPage = () => {
 			fetchPersonalRecipes();
 			fetchSavedRecipes();
 		} else {
-			console.log("Not logged in");
+			alert("Not logged in");
 		}
 		fetchAllUserRecipes();
 		fetchUserData();
