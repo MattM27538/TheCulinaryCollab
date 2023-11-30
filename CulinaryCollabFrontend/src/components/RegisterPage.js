@@ -61,15 +61,12 @@ const RegisterPage = () => {
 				username: lowerCaseUsername,
 				originalUsername: username,
 				email: lowerCaseEmail,
-				friendRequests: [], // Initialize friendRequests as an empty array
-				friendsList: [] // Also initialize friendsList as an empty array if needed
-				// Add other fields as needed
+				friendRequests: [],
+				friendsList: []
 			});
 			
 			sendEmailVerification(auth.currentUser)
 				.then(() => {
-			    // Email verification sent!
-			    // ...
 			  });
 			navigate('/workshop');
 		} catch (error) {
