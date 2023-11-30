@@ -69,13 +69,13 @@ const WorkshopPage = () => {
 
 				const allUserRecipesRef = collection(firestore, `allUserRecipes`);
 				await addDoc(allUserRecipesRef, extendedRecipeData);
-					
-				alert('Personal recipe saved successfully');
+
+				console.log('Personal recipe saved successfully');
 				fetchPersonalRecipes();
 				fetchAllUserRecipes();
 			}
 		} catch (error) {
-			alert('Error saving personal recipe: ', error);
+			console.error('Error saving personal recipe: ', error);
 		}
 	};
 	const removeSavedRecipe = async (recipeId) => {
@@ -83,11 +83,11 @@ const WorkshopPage = () => {
 			if (auth.currentUser && recipeId) {
 				const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/savedRecipes`, recipeId);
 				await deleteDoc(recipeRef);
-				alert('Recipe removed successfully');
+				console.log('Recipe removed successfully');
 				fetchSavedRecipes();
 			}
 		} catch (error) {
-			alert('Error removing saved recipe: ', error);
+			console.error('Error removing saved recipe: ', error);
 		}
 	};
 
@@ -96,11 +96,11 @@ const WorkshopPage = () => {
 			if (auth.currentUser) {
 				const savedRecipesRef = collection(firestore, `users/${auth.currentUser.uid}/savedRecipes`);
 				await addDoc(savedRecipesRef, recipe);
-				alert('Recipe saved successfully');
+				console.log('Recipe saved successfully');
 				fetchSavedRecipes();
 			}
 		} catch (error) {
-			alert('Error saving recipe: ', error);
+			console.error('Error saving recipe: ', error);
 		}
 	};
 
@@ -137,14 +137,9 @@ const WorkshopPage = () => {
 		}
 	};
 
-<<<<<<< HEAD
-	const openEditModal = (recipe) => {
-		alert("Opening edit modal for recipe: ", recipe);
-=======
 
 	const openEditModal = (recipe, collectionType) => {
 		console.log("Opening edit modal for recipe: ", recipe);
->>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 		setSelectedRecipeForEdit(recipe);
 		setOriginalCollection(collectionType);
 		setIsEditModalOpen(true);
@@ -164,14 +159,6 @@ const WorkshopPage = () => {
 		setIsPersonalViewModalOpen(false);
 		setSelectedRecipe(null);
 	};
-<<<<<<< HEAD
-	const updateRecipe = async (updatedRecipeData) => {
-		try {
-			const recipeRef = doc(firestore, `users/${auth.currentUser.uid}/personalRecipes`, selectedRecipeForEdit.id);
-			await setDoc(recipeRef, updatedRecipeData);
-			alert('Recipe updated successfully');
-=======
->>>>>>> dc28d8d4054dc3e28b089697da021ca06cab8c70
 
 	const deleteRecipe = async (recipeId) => {
 		try {
@@ -222,7 +209,7 @@ const WorkshopPage = () => {
 			fetchProfileDisplayRecipes();
 
 		} catch (error) {
-			alert('Error updating recipe: ', error);
+			console.error('Error updating recipe: ', error);
 		}
 	};
 
@@ -233,7 +220,7 @@ const WorkshopPage = () => {
 			fetchPersonalRecipes();
 			fetchSavedRecipes();
 		} else {
-			alert("Not logged in");
+			console.log("Not logged in");
 		}
 		fetchAllUserRecipes();
 		fetchUserData();
@@ -340,7 +327,7 @@ const WorkshopPage = () => {
 			case 'profileDisplay':
 				onProfileDisplayRecipeEdit(selectedRecipe);
 				break;
-			default: 
+			default:
 				break;
 		}
 	};
@@ -362,13 +349,13 @@ const WorkshopPage = () => {
 			if (type === 'public') {
 				setIsViewModalOpen(true);
 			}else if (type === 'personal') {
-				//	onPersonalRecipeEdit(recipe);
+				//      onPersonalRecipeEdit(recipe);
 				onPersonalRecipeView(recipe);
 			} else if (type === 'saved') {
-				//	onSavedRecipeEdit(recipe);
+				//      onSavedRecipeEdit(recipe);
 				onSavedRecipeView(recipe);
 			} else if (type === 'profileDisplay') {
-				//	onProfileDisplayRecipeEdit(recipe);
+				//      onProfileDisplayRecipeEdit(recipe);
 				onProfileDisplayRecipeView(recipe);
 			}
 		};
@@ -436,20 +423,19 @@ const WorkshopPage = () => {
 		<div className="recipes-display">
 		<h2>My Recipes in All User Recipes</h2>
 		<div className="collection-box">
-		<Collection 
-		recipes={allUserRecipes.filter(recipe => recipe.createdBy.uid === auth.currentUser.uid)} 
-		type="allUserRecipes" 
-		handleDrop={handleDrop} 
+		<Collection
+		recipes={allUserRecipes.filter(recipe => recipe.createdBy.uid === auth.currentUser.uid)}
+		type="allUserRecipes"
+		handleDrop={handleDrop}
 		/>
-		</div> 
+		</div>
 		</div>
 
-		{/* Delete Area */}
+		{/* Trash Bin*/}
 		<div className="delete-area">
 		<TrashBox />
 		</div>
-		</div>
-
+		</div> 
 		{/* Public recipes */}
 		<h2>Public Recipes</h2>
 		<div className="collection-box">
