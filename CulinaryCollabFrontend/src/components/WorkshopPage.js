@@ -263,7 +263,16 @@ const WorkshopPage = () => {
 			}
 		} else if (item.type !== collectionName) {
 			if (collectionName === 'allUserRecipes') {
-				const newRecipeData = { ...item.recipe };
+				const currentUserData = {
+					uid: auth.currentUser.uid,
+					username: originalUsername,
+					email: auth.currentUser.email
+				};
+
+				const newRecipeData = {
+					...item.recipe,
+					createdBy: currentUserData
+				};
 				await addDoc(collection(firestore, 'allUserRecipes'), newRecipeData);
 			} else {
 				if (item.type !== 'public') {
