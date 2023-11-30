@@ -220,7 +220,7 @@ const WorkshopPage = () => {
 			fetchPersonalRecipes();
 			fetchSavedRecipes();
 		} else {
-			alert("Not logged in");
+			//alert("Not logged in");
 		}
 		fetchAllUserRecipes();
 		fetchUserData();
