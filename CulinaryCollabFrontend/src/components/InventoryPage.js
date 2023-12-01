@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { firestore, storage, auth } from '../firebase';
 import './InventoryPage.css';
 
 const RecipeFinder = ({ inventory }) => {
@@ -32,7 +33,15 @@ const RecipeFinder = ({ inventory }) => {
         setFilteredRecipes(matchingRecipes);
     };
 
-    return (
+	if (!auth.currentUser) {
+		return (
+			<div className="login-prompt">
+			<h1>Please Log In</h1>
+			<p>To access this page, you need to be logged in.</p>
+			</div>
+		);
+	}
+	return (
         <div className="recipe-finder">
             <h2>Find Recipes</h2>
             <div className="form-group">

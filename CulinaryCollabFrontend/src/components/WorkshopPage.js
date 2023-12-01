@@ -395,14 +395,14 @@ const WorkshopPage = () => {
 			</div>
 		);
 	};
-
-
-
-
-	if (!user) {
-		return <div>Please log in to view this page. </div>;
+	if (!auth.currentUser) {
+		return (
+			<div className="login-prompt">
+			<h1>Please Log In</h1>
+			<p>To access this page, you need to be logged in.</p>
+			</div>
+		);
 	}
-
 	return (
 		<DndProvider backend={HTML5Backend}>
 		<div className="landing-page">

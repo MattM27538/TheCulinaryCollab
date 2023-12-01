@@ -225,6 +225,16 @@ const SocialPage = () => {
 		user.username.toLowerCase().includes(searchTerm.toLowerCase())
 	);
 
+
+	if (!auth.currentUser) {
+		return (
+			<div className="login-prompt">
+			<h1>Please Log In</h1>
+			<p>To access this page, you need to be logged in.</p>
+
+			</div>
+		);
+	}
 	return (
 		<div className="social-page-container">
 		<div className="users-section">
