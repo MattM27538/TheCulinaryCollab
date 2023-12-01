@@ -1,10 +1,10 @@
 .star-rating .star {
-    cursor: pointer;
-    color: gold;
-    font-size: 24px;
-    padding: 2px;
+	cursor: pointer;
+	color: gold;
+	font-size: 24px;
+	padding: 2px;
 }
 
 .star-rating .star.filled {
-    color: darkorange;
+	color: darkorange;
 }

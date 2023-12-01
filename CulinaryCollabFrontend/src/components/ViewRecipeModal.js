@@ -6,6 +6,7 @@ import { doc, setDoc, getDocs, collection, getDoc } from 'firebase/firestore';
 
 const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) => {
 	const [userRating, setUserRating] = useState(null);
+	const [totalRatingsCount, setTotalRatingsCount] = useState(0);
 	const [tempRating, setTempRating] = useState(0);
 	const [comment, setComment] = useState('');
 	const [averageRating, setAverageRating] = useState(null);
@@ -34,17 +35,16 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 
 	const fetchRatings = async () => {
 		if (!recipe) return;
+
 		const ratingsRef = collection(firestore, `recipes/${recipe.id}/ratings`);
 		const ratingsSnap = await getDocs(ratingsRef);
 		let total = 0;
 		let count = 0;
 		let commentsArray = [];
+
 		ratingsSnap.forEach((doc) => {
 			total += doc.data().rating;
 			count++;
-			if (doc.id === user.uid) {
-				setUserRating(doc.data().rating);
-			}
 			if (doc.data().comment) {
 				commentsArray.push({
 					user: doc.data().username,
@@ -54,8 +54,10 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 			}
 		});
 		setAverageRating(count === 0 ? 0 : total / count);
+		setTotalRatingsCount(count);
 		setComments(commentsArray);
 	};
+
 	const handleSubmitRating = async () => {
 		if (user && username) {
 			const ratingRef = doc(firestore, `recipes/${recipe.id}/ratings`, user.uid);
@@ -90,12 +92,23 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		</div>
 
 		{averageRating !== null && (
-			<div>
-			<p>Average Rating:</p>
-			<RatingStars value={averageRating} readOnly />
+			<div className="average-rating-section">
+			<div className="average-rating">
+			<p>
+			Average Rating: <RatingStars value={averageRating} readOnly />
+			<span className="ratings-count"> ({totalRatingsCount} Ratings)</span>
+			</p>
+			</div>
+			<div className="comments-toggle">
 			<button onClick={() => setShowComments(!showComments)}>
 			Show Comments ({comments.length})
 			</button>
+			</div>
+			</div>
+		)}
+
+		{showComments && (
+			<div className="comments-dropdown">
 			{showComments && (
 				<div className="comments-dropdown">
 				{comments.map((comment, index) => (
@@ -107,10 +120,9 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 				))}
 				</div>
 			)}
-			</div>
-		)}
 
-		<p><strong>Timing:</strong> {recipe.timing}</p>
+			</div>
+		)}		<p><strong>Timing:</strong> {recipe.timing}</p>
 		<p><strong>Taste:</strong> {recipe.taste}</p>
 		<p><strong>Ingredients:</strong></p>
 		<ul>
@@ -131,4 +143,3 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 };
 
 export default ViewRecipeModal;
-
