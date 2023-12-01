@@ -179,31 +179,26 @@ const UserProfilePage = () => {
 		return <div>Loading...</div>;
 	}
 
-	//Check if the current user is already friends or has sent a friend request
-	const isFriend = userProfile.friendsList && userProfile.friendsList.includes(auth.currentUser.uid);
-	const hasSentFriendRequest =
-	  userProfile.friendRequests &&
-	  userProfile.friendRequests.some((request) => request.uid === auth.currentUser.uid);
-
-	//Render the friend request button conditionally
-	const renderFriendRequestButton = () => {
+	// Remove friend from friends list
+	const handleRemoveFriend = async (friendId) => {
 		if (!auth.currentUser) {
-		  return null; //Render nothing if the user is not logged in
+			alert("No user logged in");
+			return;
 		}
-	
-		if (auth.currentUser.uid === uid) {
-		  return null; //Do not display friend request button for the user's own profile
-		}
-	
-		if (isFriend) {
-		  return <p>You are already friends.</p>; //Display a message if already friends
-		}
-	
-		if (hasSentFriendRequest) {
-		  return <p>You already sent a friend request.</p>; //Display a message if a friend request is already sent
+
+		const currentUserRef = doc(firestore, 'users', auth.currentUser.uid);
+		try {
+			await updateDoc(currentUserRef, {
+				friendsList: arrayUnion(friendId)
+			});
+		} catch (error) {
+			console.error("Error removing friend:  ", error);
+			alert("Failed to remove friend.");
+			return;
 		}
 
 	};
+
 
 	return (
 		<div className="user-profile-page">
@@ -215,7 +210,8 @@ const UserProfilePage = () => {
 		<div className="user-action-buttons">
 		<button className="back-button" onClick={() => navigate('/social')}>Back to Social Page</button>
 		<button className="send-friend-request" onClick={() => handleSendFriendRequest(uid)}>Send Friend Request</button>
-		{renderFriendRequestButton()} {/* Render friend request button conditionally */}
+		{userProfile.friendsList && userProfile.friendsList.includes(auth.currentUser?.uid) && 
+		<button className="remove-friend" onClick={() => handleRemoveFriend(uid)}>Remove Friend</button>}
 		</div>
 
 		{/* Grid display for recipes */}
