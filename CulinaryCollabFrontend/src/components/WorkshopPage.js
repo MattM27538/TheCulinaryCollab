@@ -182,6 +182,7 @@ const WorkshopPage = () => {
 	};
 
 	const updateRecipe = async (updatedRecipeData) => {
+		console.log("originalCollection: ", originalCollection);
 		const currentUserData = {
 			uid: auth.currentUser.uid,
 			username: originalUsername,
@@ -255,7 +256,7 @@ const WorkshopPage = () => {
 			return;
 		}
 		if (item.type === 'public' && collectionName !== 'public') {
-			const newRecipeData = { ...item.recipe, visibility: collectionName };
+			const newRecipeData = { ...item.recipe, cost: '', timeToMake: '' };
 			if (collectionName === 'profileDisplay') {
 				await addDoc(collection(firestore, `users/${auth.currentUser.uid}/Profile-display`), newRecipeData);
 			} else {
