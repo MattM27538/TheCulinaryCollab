@@ -78,7 +78,7 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		<div className={`modal ${isOpen ? 'open' : ''}`}>
 		<div className="modal-content">
 		<h2>{recipe.name}</h2>
-
+		{user && (
 		<div>
 		<p>Your Rating:</p>
 		<RatingStars value={tempRating || userRating || 0} onChange={setTempRating} />
@@ -90,7 +90,7 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		/>
 		<button onClick={handleSubmitRating}>Submit Rating</button>
 		</div>
-
+		)}
 		{averageRating !== null && (
 			<div className="average-rating-section">
 			<div className="average-rating">
