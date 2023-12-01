@@ -79,17 +79,17 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 		<div className="modal-content">
 		<h2>{recipe.name}</h2>
 		{user && (
-		<div>
-		<p>Your Rating:</p>
-		<RatingStars value={tempRating || userRating || 0} onChange={setTempRating} />
-		<input
-		type="text"
-		value={comment}
-		onChange={(e) => setComment(e.target.value)}
-		placeholder="Add a comment"
-		/>
-		<button onClick={handleSubmitRating}>Submit Rating</button>
-		</div>
+			<div>
+			<p>Your Rating:</p>
+			<RatingStars value={tempRating || userRating || 0} onChange={setTempRating} />
+			<input
+			type="text"
+			value={comment}
+			onChange={(e) => setComment(e.target.value)}
+			placeholder="Add a comment"
+			/>
+			<button onClick={handleSubmitRating}>Submit Rating</button>
+			</div>
 		)}
 		{averageRating !== null && (
 			<div className="average-rating-section">
@@ -109,20 +109,19 @@ const ViewRecipeModal = ({ isOpen, onClose, recipe, onSave, showSaveOption }) =>
 
 		{showComments && (
 			<div className="comments-dropdown">
-			{showComments && (
-				<div className="comments-dropdown">
-				{comments.map((comment, index) => (
-					<div key={index} className="comment-box">
-					<p><strong>User:</strong> {comment.user}</p>
-					<p><strong>Rating:</strong> {comment.rating}</p>
-					{comment.comment && <p><strong>Comment:</strong> {comment.comment}</p>}
-					</div>
-				))}
+			{comments.map((comment, index) => (
+				<div key={index} className="comment-box">
+				<p><strong>User:</strong> {comment.user}</p>
+				<p>
+				<strong>Rating:</strong> 
+				<RatingStars value={comment.rating} readOnly />
+				</p>
+				{comment.comment && <p><strong>Comment:</strong> {comment.comment}</p>}
 				</div>
-			)}
-
+			))}
 			</div>
-		)}		<p><strong>Timing:</strong> {recipe.timing}</p>
+		)}
+		<p><strong>Timing:</strong> {recipe.timing}</p>
 		<p><strong>Taste:</strong> {recipe.taste}</p>
 		<p><strong>Ingredients:</strong></p>
 		<ul>
