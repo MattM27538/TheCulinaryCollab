@@ -1,6 +1,6 @@
 .star-rating .star {
 	cursor: pointer;
-	color: gold;
+	color: #ddd;
 	font-size: 24px;
 	padding: 2px;
 }
