@@ -5,6 +5,7 @@ import { auth, firestore } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css';
+import background from "./Champagne.jpg";
 const RegisterPage = () => {
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
@@ -82,12 +83,14 @@ const RegisterPage = () => {
 	
 
 	return (
-		<div className="register-page">
-		<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-		<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-		<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-		<button className="common-button-style" onClick={handleRegister}>Register</button>
-		<button className="common-button-style" onClick={() => navigate('/login')}>Back to Login</button>
+		<div className="register-page-container" style={{backgroundImage: `url(${background})`}}>
+			<div className="register-page">
+				<input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+				<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+				<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+				<button className="common-button-style" onClick={handleRegister}>Register</button>
+				<button className="common-button-style" onClick={() => navigate('/login')}>Back to Login</button>
+			</div>
 		</div>
 	);
 };
